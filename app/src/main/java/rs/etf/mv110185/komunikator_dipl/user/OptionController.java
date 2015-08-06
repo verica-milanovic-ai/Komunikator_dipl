@@ -41,7 +41,7 @@ public class OptionController {
         view.setId(model.getId());
     }
 
-    // called when user select Option
+    // called when user select Option => it wont be in main thread!!!
     public List<OptionModel> optionSelected() {
         List<OptionModel> ret = null;
         if (model.getIs_final() == 0) {
