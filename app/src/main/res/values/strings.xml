@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Комуникатор</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="menuButton_desc">login as admin</string>
+    <string name="profilePicture">profile picture</string>
+    <string name="ja_zelim">ја желим</string>
+    <string name="ja_se_osecam">ја се осећам</string>
+    <string name="pitanjaOdgovori">питања и одговори</string>
+    <string name="pomoc">треба ми ПОМОЋ!</string>
+    <string name="kategorije">категорије</string>
+
+    <string name="file">populateDB.</string>
+</resources>

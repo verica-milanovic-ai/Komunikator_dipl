@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/src/main/java/rs/etf/mv110185/komunikator_dipl/db/DBContract.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/rs/etf/mv110185/komunikator_dipl/db/DBHelper.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/rs/etf/mv110185/komunikator_dipl/db/OptionModel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/Thumbs.db" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/border.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/jaseosecam.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/jazelim.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/kategorije.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/mymenuicon.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/pitanjaodgovori.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/trebamipomoc.png" charset="UTF-8" />
+  </component>
+</project>

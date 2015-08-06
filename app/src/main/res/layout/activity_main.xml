@@ -1,0 +1,214 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CommunicatorMain">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:background="#ff525252">
+
+        <ImageView
+            android:id="@+id/profilePicture"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="12.5dp"
+            android:clickable="true"
+            android:contentDescription="@string/profilePicture"
+            android:src="@android:drawable/sym_def_app_icon" />
+
+        <ImageButton
+            android:id="@+id/adminButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="22.5dp"
+            android:background="#0c000000"
+            android:clickable="true"
+            android:contentDescription="@string/menuButton_desc"
+            android:scaleType="centerInside"
+            android:src="@drawable/mymenuicon" />
+    </RelativeLayout>
+
+    <GridLayout
+        android:id="@+id/firstScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout"
+        android:layout_centerHorizontal="true"
+        android:alignmentMode="alignMargins"
+        android:background="#ffffff"
+        android:columnCount="7"
+        android:rowCount="2"
+        android:touchscreenBlocksFocus="false"
+        android:useDefaultMargins="true">
+
+        <LinearLayout
+            android:id="@+id/option_jazelim"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:background="@drawable/border"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/BT_jaZelim"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/jazelim" />
+
+            <TextView
+                android:id="@+id/TX_jaZelim"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:text="@string/ja_zelim"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option_jaosecam"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:background="@drawable/border"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/BT_jaOsecam"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/jaseosecam" />
+
+            <TextView
+                android:id="@+id/TX_jaOsecam"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:text="@string/ja_se_osecam"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option_pitanjaOdg"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_column="2"
+            android:layout_row="0"
+            android:background="@drawable/border"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/BT_pitanjaOdg"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/pitanjaodgovori" />
+
+            <TextView
+                android:id="@+id/TX_pitanjaOdg"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:singleLine="false"
+                android:text="@string/pitanjaOdgovori"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option_pomoc"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_column="3"
+            android:layout_row="0"
+            android:background="@drawable/border"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/BT_pomoc"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/trebamipomoc" />
+
+            <TextView
+                android:id="@+id/TX_pomoc"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:singleLine="false"
+                android:text="@string/pomoc"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option_kategorije"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_column="4"
+            android:layout_row="0"
+            android:background="@drawable/border"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/BT_kategorije"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/kategorije" />
+
+            <TextView
+                android:id="@+id/TX_kategorije"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:singleLine="false"
+                android:text="@string/kategorije"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </GridLayout>
+
+
+</RelativeLayout>
