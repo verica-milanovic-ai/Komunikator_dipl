@@ -23,6 +23,22 @@ public class OptionView extends LinearLayout {
     private ImageButton image;
     private TextView text;
 
+    public ImageButton getImage() {
+        return image;
+    }
+
+    public void setImage(ImageButton image) {
+        this.image = image;
+    }
+
+    public TextView getText() {
+        return text;
+    }
+
+    public void setText(TextView text) {
+        this.text = text;
+    }
+
     public OptionView(Context context) {
         super(context);
     }
@@ -36,7 +52,7 @@ public class OptionView extends LinearLayout {
     }
 
 
-     void initOptionView(Bitmap img, String text_val) {
+    void initOptionView(Bitmap img, String text_val) {
         image = new ImageButton(this.getContext());
         image.setImageBitmap(img);
         text = new TextView(this.getContext());
