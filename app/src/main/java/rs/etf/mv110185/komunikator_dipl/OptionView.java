@@ -52,7 +52,7 @@ public class OptionView extends LinearLayout {
     }
 
 
-    void initOptionView(Bitmap img, String text_val) {
+    public void initOptionView(Bitmap img, String text_val) {
         image = new ImageButton(this.getContext());
         image.setImageBitmap(img);
         text = new TextView(this.getContext());
@@ -65,7 +65,6 @@ public class OptionView extends LinearLayout {
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         text.setTextColor(BLACK);
-
         this.addView(image);
         this.addView(text);
     }

@@ -174,10 +174,44 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Get All Options
     public List<OptionModel> getAllOptions() {
-        List<OptionModel> opts = new LinkedList<OptionModel>();
+        List<OptionModel> opts = new LinkedList<>();
 
         // 1. build the query
         String query = "SELECT  * FROM " + DBContract.CommunicatorOption.TABLE_NAME;
+
+        // 2. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        // 3. go over each row, build option and add it to list
+        OptionModel option = null;
+        if (cursor.moveToFirst()) {
+            do {
+                option = new OptionModel();
+                option.setId(Integer.parseInt(cursor.getString(0)));
+                option.setImage_src(cursor.getString(1));
+                option.setIs_sub_option(Integer.parseInt(cursor.getString(2)));
+                option.setIs_final(Integer.parseInt(cursor.getString(3)));
+                option.setParent(Integer.parseInt(cursor.getString(4)));
+                option.setFinal_text(cursor.getString(5));
+                option.setText(cursor.getString(6));
+
+                // Add option to opts
+                opts.add(option);
+            } while (cursor.moveToNext());
+        }
+
+        // return opts
+        return opts;
+    }
+
+    // Get All SubOptions from parent
+    public List<OptionModel> getAllOptions(OptionModel model) {
+        List<OptionModel> opts = new LinkedList<>();
+
+        // 1. build the query
+        String query = "SELECT  * FROM " + DBContract.CommunicatorOption.TABLE_NAME + " WHERE "
+                + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + model.getId() + "'";
 
         // 2. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
