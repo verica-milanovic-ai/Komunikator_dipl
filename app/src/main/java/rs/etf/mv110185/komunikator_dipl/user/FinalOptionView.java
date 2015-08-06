@@ -1,4 +1,4 @@
-package rs.etf.mv110185.komunikator_dipl;
+package rs.etf.mv110185.komunikator_dipl.user;
 
 import android.content.Context;
 import android.util.AttributeSet;

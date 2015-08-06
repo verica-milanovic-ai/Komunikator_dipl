@@ -1,11 +1,10 @@
-package rs.etf.mv110185.komunikator_dipl;
+package rs.etf.mv110185.komunikator_dipl.user;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import rs.etf.mv110185.komunikator_dipl.db.DBHelper;
