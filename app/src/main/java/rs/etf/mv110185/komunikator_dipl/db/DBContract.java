@@ -3,7 +3,7 @@ package rs.etf.mv110185.komunikator_dipl.db;
 import android.provider.BaseColumns;
 
 /**
- * Created by wekabelka on 8/2/2015.
+ * Created by Verica Milanovic  on 8/2/2015.
  */
 public final class DBContract {
     public DBContract() {

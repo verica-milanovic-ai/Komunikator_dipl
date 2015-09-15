@@ -2,28 +2,20 @@ package rs.etf.mv110185.komunikator_dipl.db;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
-import rs.etf.mv110185.komunikator_dipl.R;
-
 /**
- * Created by wekabelka on 8/2/2015.
+ * Created by Verica Milanovic  on 8/2/2015.
  */
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -68,39 +60,6 @@ public class DBHelper extends SQLiteOpenHelper {
         new PopulateDBTask().execute(db);
     }
 
-    private class PopulateDBTask extends AsyncTask<SQLiteDatabase, Void, Void> {
-        /**
-         * The system calls this to perform work in a worker thread and
-         * delivers it the parameters given to AsyncTask.execute()
-         */
-
-        @Override
-        protected Void doInBackground(SQLiteDatabase... params) {
-
-            File f = new File(context.getFilesDir(), FILE_NAME);
-            SQLiteDatabase db = params[0];
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(f));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    db.execSQL(line);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        /**
-         * The system calls this to perform work in the UI thread and delivers
-         * the result from doInBackground()
-         */
-        protected void onPostExecute(Void result) {
-
-        }
-    }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
@@ -113,9 +72,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
-
-
-    // C R U D operations => (create "add", read "get", update, delete) option
 
     public void addOption(OptionModel option) {
         // 1. get database
@@ -138,6 +94,9 @@ public class DBHelper extends SQLiteOpenHelper {
         // 4. close
         db.close();
     }
+
+
+    // C R U D operations => (create "add", read "get", update, delete) option
 
     public OptionModel getOption(int id) {
         // 1. get reference to readable DB
@@ -279,6 +238,39 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // 3. close
         db.close();
+    }
+
+    private class PopulateDBTask extends AsyncTask<SQLiteDatabase, Void, Void> {
+        /**
+         * The system calls this to perform work in a worker thread and
+         * delivers it the parameters given to AsyncTask.execute()
+         */
+
+        @Override
+        protected Void doInBackground(SQLiteDatabase... params) {
+
+            File f = new File(context.getFilesDir(), FILE_NAME);
+            SQLiteDatabase db = params[0];
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(f));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    db.execSQL(line);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        /**
+         * The system calls this to perform work in the UI thread and delivers
+         * the result from doInBackground()
+         */
+        protected void onPostExecute(Void result) {
+
+        }
     }
 
 }

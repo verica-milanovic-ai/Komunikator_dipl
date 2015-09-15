@@ -4,10 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 /**
- * Created by wekab on 06.08.2015..
+ * Created by Verica Milanovic  on 06.08.2015..
  */
 public class FinalOptionView extends OptionView {
-
+    // text size on View
     public static final float FINAL_TEXT_SIZE = 12;
 
     public FinalOptionView(Context context) {

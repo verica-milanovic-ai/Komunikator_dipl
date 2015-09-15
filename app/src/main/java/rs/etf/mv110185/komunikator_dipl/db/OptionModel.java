@@ -1,7 +1,7 @@
 package rs.etf.mv110185.komunikator_dipl.db;
 
 /**
- * Created by wekabelka on 8/2/2015.
+ * Created by Verica Milanovic  on 8/2/2015.
  */
 public class OptionModel {
     private int id;

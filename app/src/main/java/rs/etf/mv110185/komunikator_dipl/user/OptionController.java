@@ -11,10 +11,10 @@ import rs.etf.mv110185.komunikator_dipl.db.DBHelper;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 /**
- * Created by wekab on 06.08.2015..
+ * Created by Verica Milanovic on 06.08.2015..
  */
 public class OptionController {
-    private OptionModel model;
+    protected OptionModel model;
     private OptionView view;
     private Context context;
 
@@ -42,11 +42,12 @@ public class OptionController {
     }
 
     // called when user select Option => it wont be in main thread!!!
+    // must check if it's not null; possible null value means that selected option is final option
     public List<OptionModel> optionSelected() {
         List<OptionModel> ret = null;
         if (model.getIs_final() == 0) {
             DBHelper dbHelper = new DBHelper(context);
-
+            // returns all child options from selected option
             ret = dbHelper.getAllOptions(model);
         }
         return ret;

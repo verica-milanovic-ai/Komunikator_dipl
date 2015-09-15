@@ -1,12 +1,8 @@
 package rs.etf.mv110185.komunikator_dipl.user;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -16,12 +12,24 @@ import android.widget.TextView;
 import static android.graphics.Color.BLACK;
 
 /**
- * Created by wekab on 06.08.2015..
+ * Created by Verica Milanovic  on 06.08.2015..
  */
 public class OptionView extends LinearLayout {
 
     private ImageButton image;
     private TextView text;
+
+    public OptionView(Context context) {
+        super(context);
+    }
+
+    public OptionView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public OptionView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
 
     public ImageButton getImage() {
         return image;
@@ -38,19 +46,6 @@ public class OptionView extends LinearLayout {
     public void setText(TextView text) {
         this.text = text;
     }
-
-    public OptionView(Context context) {
-        super(context);
-    }
-
-    public OptionView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public OptionView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
 
     public void initOptionView(Bitmap img, String text_val) {
         image = new ImageButton(this.getContext());
