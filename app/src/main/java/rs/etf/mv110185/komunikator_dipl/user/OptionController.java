@@ -15,8 +15,8 @@ import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
  */
 public class OptionController {
     protected OptionModel model;
-    private OptionView view;
-    private Context context;
+    protected OptionView view;
+    protected Context context;
 
     public OptionController(OptionModel model, OptionView view, Context context) {
         this.model = model;

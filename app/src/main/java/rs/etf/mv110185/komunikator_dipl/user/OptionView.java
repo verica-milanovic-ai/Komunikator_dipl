@@ -35,8 +35,9 @@ public class OptionView extends LinearLayout {
         return image;
     }
 
-    public void setImage(ImageButton image) {
-        this.image = image;
+    public void setImage(Bitmap image) {
+        this.image.setImageBitmap(image);
+        this.image.setScaleType(ImageView.ScaleType.CENTER);
     }
 
     public TextView getText() {
