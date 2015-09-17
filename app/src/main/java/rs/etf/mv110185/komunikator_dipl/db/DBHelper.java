@@ -33,6 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + DBContract.CommunicatorOption.TABLE_NAME + " (" +
                     DBContract.CommunicatorOption.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC + TEXT_TYPE + COMMA_SEP +
+                    DBContract.CommunicatorOption.COLUMN_NAME_VOICE_SRC + TEXT_TYPE + COMMA_SEP +
                     DBContract.CommunicatorOption.COLUMN_NAME_FINAL_TEXT + TEXT_TYPE + " DEFAULT NULL" + COMMA_SEP +
                     DBContract.CommunicatorOption.COLUMN_NAME_TEXT + TEXT_TYPE + COMMA_SEP +
                     DBContract.CommunicatorOption.COLUMN_NAME_IS_FINAL + BOOL_TYPE + COMMA_SEP +
@@ -80,6 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // 2. set values
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC, option.getImage_src());
+        values.put(DBContract.CommunicatorOption.COLUMN_NAME_VOICE_SRC, option.getVoice_src());
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_IS_SUB_OPTION, option.getIs_sub_option());
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_IS_FINAL, option.getIs_final());
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_PARENT, option.getParent());
@@ -121,11 +123,12 @@ public class DBHelper extends SQLiteOpenHelper {
         OptionModel option = new OptionModel();
         option.setId(Integer.parseInt(cursor.getString(0)));
         option.setImage_src(cursor.getString(1));
-        option.setIs_sub_option(Integer.parseInt(cursor.getString(2)));
-        option.setIs_final(Integer.parseInt(cursor.getString(3)));
-        option.setParent(Integer.parseInt(cursor.getString(4)));
-        option.setFinal_text(cursor.getString(5));
-        option.setText(cursor.getString(6));
+        option.setVoice_src(cursor.getString(2));
+        option.setIs_sub_option(Integer.parseInt(cursor.getString(3)));
+        option.setIs_final(Integer.parseInt(cursor.getString(4)));
+        option.setParent(Integer.parseInt(cursor.getString(5)));
+        option.setFinal_text(cursor.getString(6));
+        option.setText(cursor.getString(7));
 
         // 5. return option
         return option;
@@ -149,11 +152,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 option = new OptionModel();
                 option.setId(Integer.parseInt(cursor.getString(0)));
                 option.setImage_src(cursor.getString(1));
-                option.setIs_sub_option(Integer.parseInt(cursor.getString(2)));
-                option.setIs_final(Integer.parseInt(cursor.getString(3)));
-                option.setParent(Integer.parseInt(cursor.getString(4)));
-                option.setFinal_text(cursor.getString(5));
-                option.setText(cursor.getString(6));
+                option.setVoice_src(cursor.getString(2));
+                option.setIs_sub_option(Integer.parseInt(cursor.getString(3)));
+                option.setIs_final(Integer.parseInt(cursor.getString(4)));
+                option.setParent(Integer.parseInt(cursor.getString(5)));
+                option.setFinal_text(cursor.getString(6));
+                option.setText(cursor.getString(7));
 
                 // Add option to opts
                 opts.add(option);
@@ -183,11 +187,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 option = new OptionModel();
                 option.setId(Integer.parseInt(cursor.getString(0)));
                 option.setImage_src(cursor.getString(1));
-                option.setIs_sub_option(Integer.parseInt(cursor.getString(2)));
-                option.setIs_final(Integer.parseInt(cursor.getString(3)));
-                option.setParent(Integer.parseInt(cursor.getString(4)));
-                option.setFinal_text(cursor.getString(5));
-                option.setText(cursor.getString(6));
+                option.setVoice_src(cursor.getString(2));
+                option.setIs_sub_option(Integer.parseInt(cursor.getString(3)));
+                option.setIs_final(Integer.parseInt(cursor.getString(4)));
+                option.setParent(Integer.parseInt(cursor.getString(5)));
+                option.setFinal_text(cursor.getString(6));
+                option.setText(cursor.getString(7));
 
                 // Add option to opts
                 opts.add(option);
@@ -208,6 +213,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC, option.getImage_src());
+        values.put(DBContract.CommunicatorOption.COLUMN_NAME_VOICE_SRC, option.getVoice_src());
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_IS_SUB_OPTION, option.getIs_sub_option());
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_IS_FINAL, option.getIs_final());
         values.put(DBContract.CommunicatorOption.COLUMN_NAME_PARENT, option.getParent());

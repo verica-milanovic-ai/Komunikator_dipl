@@ -61,6 +61,7 @@ public class OptionView extends LinearLayout {
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         text.setTextColor(BLACK);
+        text.setLayoutParams(params2);
         this.addView(image);
         this.addView(text);
     }

@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import rs.etf.mv110185.komunikator_dipl.MainActivity;
+import rs.etf.mv110185.komunikator_dipl.ComunicatorController;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 /**
@@ -36,10 +37,6 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
     }
 
     // methods for changing model
-    public void changeImage(String imageSrc) {
-        model.setImage_src(imageSrc);
-    }
-
     public void changeText(String newText) {
         model.setText(newText);
     }
@@ -55,7 +52,7 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Фотографиши")) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    mainActivity.startActivityForResult(intent, MainActivity.REQUEST_CAMERA);
+                    mainActivity.startActivityForResult(intent, ComunicatorController.REQUEST_CAMERA);
                 } else if (items[item].equals("Изабери из галерије")) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
@@ -63,7 +60,7 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
                     intent.setType("image/*");
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, "Изабери фотографију"),
-                            MainActivity.SELECT_FILE);
+                            ComunicatorController.SELECT_FILE);
                 } else if (items[item].equals("Поништи")) {
                     dialog.dismiss();
                 }
@@ -86,9 +83,9 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
             fo.write(bytes.toByteArray());
             fo.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e("OptionController_admin", "createNewFile() failed!");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("OptionController_admin", "output stream not ok!");
         }
         model.setImage_src(destination.getAbsolutePath());
         view.setImage(pict);
