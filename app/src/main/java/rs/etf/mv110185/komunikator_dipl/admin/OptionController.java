@@ -124,4 +124,38 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
     }
 
 
+    public void selectVoice(final AppCompatActivity mainActivity) {
+        final CharSequence[] items = {"Сними звук", "Изабери постојећи", "Поништи"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Додај звук");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Сними звук")) {
+                    Intent intent = new Intent(mainActivity, AudioRecorder.class);
+                    intent.putExtra("option_name", "option_" + model.getId());
+                    mainActivity.startActivityForResult(intent, ComunicatorController.REQUEST_AUDIO_RECORDER);
+                } else if (items[item].equals("Изабери постојећи")) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("audio/*");
+                    mainActivity.startActivityForResult(
+                            Intent.createChooser(intent, "Изабери постојећи"),
+                            ComunicatorController.SELECT_FILE);
+                } else if (items[item].equals("Поништи")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    // TODO: DO THIS METHODS!!!
+    public void handleVoiceFromRecorder() {
+    }
+
+    public void handleSelectedVoice() {
+    }
 }
