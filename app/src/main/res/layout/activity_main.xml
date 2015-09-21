@@ -10,6 +10,7 @@
         android:layout_height="75dp"
         android:background="#ff525252">
 
+
         <ImageView
             android:id="@+id/profilePicture"
             android:layout_width="50dp"
@@ -21,6 +22,17 @@
             android:clickable="true"
             android:contentDescription="@string/profilePicture"
             android:src="@android:drawable/sym_def_app_icon" />
+
+        <LinearLayout
+            android:id="@+id/userPathList"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/adminButton"
+            android:layout_toRightOf="@id/profilePicture"
+            android:clickable="true"
+            android:orientation="vertical"></LinearLayout>
 
         <ImageButton
             android:id="@+id/adminButton"
@@ -48,6 +60,17 @@
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp" />
+
+    <TextView
+        android:id="@+id/finalText"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/relativeLayout"
+        android:fontFamily="century-gothic"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:textSize="50dp"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>

@@ -24,6 +24,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "KomunikatorDB.db";
 
+    public static final String NO_FLAG = "NO";
+    public static final String YES_FLAG = "YES";
+
     private static final String TEXT_TYPE = " TEXT";
     private static final String BOOL_TYPE = " INTEGER";
     private static final String INT_TYPE = " INTEGER";
@@ -40,8 +43,17 @@ public class DBHelper extends SQLiteOpenHelper {
                     DBContract.CommunicatorOption.COLUMN_NAME_IS_SUB_OPTION + BOOL_TYPE + COMMA_SEP +
                     DBContract.CommunicatorOption.COLUMN_NAME_PARENT + INT_TYPE + " DEFAULT 0 REFERENCES option(id) ON DELETE SET DEFAULT )";
 
+    private static final String SQL_CREATE_FLAGS =
+            "CREATE TABLE " + DBContract.CommunicatorFlags.TABLE_NAME + " (" +
+                    DBContract.CommunicatorFlags.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DBContract.CommunicatorFlags.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
+                    DBContract.CommunicatorFlags.COLUMN_NAME_VALUE + TEXT_TYPE + " )";
+
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + DBContract.CommunicatorOption.TABLE_NAME;
+
+    private static final String SQL_DELETE_FLAGS =
+            "DROP TABLE IF EXISTS " + DBContract.CommunicatorFlags.TABLE_NAME;
 
     private Context context;
 
@@ -53,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_FLAGS);
         populateDB(db);
     }
 
@@ -66,6 +79,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         db.execSQL(SQL_DELETE_ENTRIES);
+        db.execSQL(SQL_DELETE_FLAGS);
         onCreate(db);
     }
 
@@ -73,6 +87,141 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
+
+
+    /**
+     * *******************************************************************************************
+     * **********************************  FLAG  *************************************************
+     * *******************************************************************************************
+     */
+
+
+    public void addFlag(FlagModel flag) {
+        // 1. get database
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // 2. set values
+        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_NAME, flag.getName());
+        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_VALUE, flag.getValue());
+
+        // 3. insert
+        db.insert(DBContract.CommunicatorFlags.TABLE_NAME, // table
+                null, //nullColumnHack
+                values); // key/value -> keys = column names/ values = column values
+
+        // 4. close
+        db.close();
+    }
+
+    public FlagModel getFlag(int id) {
+        FlagModel ret = null;
+        // 1. get reference to readable DB
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // 2. build query
+        Cursor cursor =
+                db.query(DBContract.CommunicatorFlags.TABLE_NAME, // a. table
+                        DBContract.CommunicatorFlags.COLUMNS, // b. column names
+                        " id = ?", // c. selections
+                        new String[]{String.valueOf(id)}, // d. selections args
+                        null, // e. group by
+                        null, // f. having
+                        null, // g. order by
+                        null); // h. limit
+
+        // 3. if we got results get the first one
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+
+            ret = new FlagModel();
+
+            // 4. build option object
+            ret.setId(Integer.parseInt(cursor.getString(0)));
+            ret.setName(cursor.getString(1));
+            ret.setValue(cursor.getString(2));
+        }
+        // 5. return option
+        return ret;
+    }
+
+    public FlagModel getFlag(String name) {
+        FlagModel ret = null;
+        // 1. get reference to readable DB
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // 2. build query
+        Cursor cursor =
+                db.query(DBContract.CommunicatorFlags.TABLE_NAME, // a. table
+                        DBContract.CommunicatorFlags.COLUMNS, // b. column names
+                        " name = ?", // c. selections
+                        new String[]{String.valueOf(name)}, // d. selections args
+                        null, // e. group by
+                        null, // f. having
+                        null, // g. order by
+                        null); // h. limit
+
+        // 3. if we got results get the first one
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+
+            ret = new FlagModel();
+
+            // 4. build option object
+            ret.setId(Integer.parseInt(cursor.getString(0)));
+            ret.setName(cursor.getString(1));
+            ret.setValue(cursor.getString(2));
+        }
+        // 5. return option
+        return ret;
+    }
+
+
+    public void updateFlag(FlagModel flag) {
+
+        // 1. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // 2. create ContentValues to add key "column"/value
+        ContentValues values = new ContentValues();
+
+        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_NAME, flag.getName());
+        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_VALUE, flag.getValue());
+
+        // 3. updating row
+        int i = db.update(DBContract.CommunicatorFlags.TABLE_NAME, //table
+                values, // column/value
+                DBContract.CommunicatorFlags.COLUMN_NAME_ID + " = ?", // selections
+                new String[]{String.valueOf(flag.getId())}); //selection args
+
+        // 4. close
+        db.close();
+    }
+
+    // Deleting single option
+    public void deleteFlag(FlagModel flag) {
+
+        // 1. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // 2. delete
+        db.delete(DBContract.CommunicatorFlags.TABLE_NAME,
+                DBContract.CommunicatorFlags.COLUMN_NAME_ID + " = ?",
+                new String[]{String.valueOf(flag.getId())});
+
+        // 3. close
+        db.close();
+    }
+
+
+    /**
+     * *******************************************************************************************
+     * **********************************   OPTION  **********************************************
+     * *******************************************************************************************
+     */
+
 
     public void addOption(OptionModel option) {
         // 1. get database
@@ -116,20 +265,21 @@ public class DBHelper extends SQLiteOpenHelper {
                         null); // h. limit
 
         // 3. if we got results get the first one
-        if (cursor != null)
+        OptionModel option = null;
+        if (cursor != null) {
             cursor.moveToFirst();
 
-        // 4. build option object
-        OptionModel option = new OptionModel();
-        option.setId(Integer.parseInt(cursor.getString(0)));
-        option.setImage_src(cursor.getString(1));
-        option.setVoice_src(cursor.getString(2));
-        option.setIs_sub_option(Integer.parseInt(cursor.getString(3)));
-        option.setIs_final(Integer.parseInt(cursor.getString(4)));
-        option.setParent(Integer.parseInt(cursor.getString(5)));
-        option.setFinal_text(cursor.getString(6));
-        option.setText(cursor.getString(7));
-
+            // 4. build option object
+            option = new OptionModel();
+            option.setId(Integer.parseInt(cursor.getString(0)));
+            option.setImage_src(cursor.getString(1));
+            option.setVoice_src(cursor.getString(2));
+            option.setIs_sub_option(Integer.parseInt(cursor.getString(3)));
+            option.setIs_final(Integer.parseInt(cursor.getString(4)));
+            option.setParent(Integer.parseInt(cursor.getString(5)));
+            option.setFinal_text(cursor.getString(6));
+            option.setText(cursor.getString(7));
+        }
         // 5. return option
         return option;
     }
@@ -169,16 +319,27 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Get All SubOptions from parent
-    public List<OptionModel> getAllOptions(OptionModel model) {
-        List<OptionModel> opts = new LinkedList<>();
-
+    public Cursor getAllOptions_cursor(OptionModel model) {
+        String query;
         // 1. build the query
-        String query = "SELECT  * FROM " + DBContract.CommunicatorOption.TABLE_NAME + " WHERE "
-                + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + model.getId() + "'";
+        if (model != null) {
+            query = "SELECT  * FROM " + DBContract.CommunicatorOption.TABLE_NAME + " WHERE "
+                    + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + model.getId() + "'";
+        } else {
+            query = "SELECT  * FROM " + DBContract.CommunicatorOption.TABLE_NAME + " WHERE "
+                    + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '0'";
+        }
 
         // 2. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
+
+        return cursor;
+    }
+    public List<OptionModel> getAllOptions(OptionModel model) {
+        List<OptionModel> opts = new LinkedList<>();
+
+        Cursor cursor = getAllOptions_cursor(model);
 
         // 3. go over each row, build option and add it to list
         OptionModel option = null;
@@ -245,6 +406,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // 3. close
         db.close();
     }
+
 
     private class PopulateDBTask extends AsyncTask<SQLiteDatabase, Void, Void> {
         /**

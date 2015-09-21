@@ -11,6 +11,8 @@ public final class DBContract {
 
     public static abstract class CommunicatorOption implements BaseColumns {
         public static final String TABLE_NAME = "option";
+        public static final String COLUMN_NAME_NAME = "name";
+        public static final String COLUMN_NAME_VALUE = "value";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_IMAGE_SRC = "image_src";
         public static final String COLUMN_NAME_VOICE_SRC = "voice_src";
@@ -23,5 +25,14 @@ public final class DBContract {
         public static final String[] COLUMNS = {COLUMN_NAME_ID, COLUMN_NAME_IMAGE_SRC, COLUMN_NAME_VOICE_SRC,
                 COLUMN_NAME_IS_SUB_OPTION, COLUMN_NAME_IS_FINAL, COLUMN_NAME_PARENT,
                 COLUMN_NAME_FINAL_TEXT, COLUMN_NAME_TEXT};
+
+    }
+
+    public static abstract class CommunicatorFlags implements BaseColumns {
+        public static final String TABLE_NAME = "flag";
+        public static final String COLUMN_NAME_NAME = "name";
+        public static final String COLUMN_NAME_VALUE = "value";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String[] COLUMNS = {COLUMN_NAME_ID, COLUMN_NAME_NAME, COLUMN_NAME_VALUE};
     }
 }

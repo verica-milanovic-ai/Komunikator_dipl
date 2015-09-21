@@ -10,12 +10,15 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
 
     // Options To Display
-    private ComunicatorController controller;
+    private CommunicatorController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO: restore activity if it's needed
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        controller = new CommunicatorController(this);
     }
 
     @Override
@@ -30,19 +33,23 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        if (ComunicatorController.IS_ADMIN == 1) {
+        if (CommunicatorController.IS_ADMIN == 1) {
             switch (item.getItemId()) {
                 case R.id.action_stats:
                     // TODO: New Activity => statistics !!!
+                    controller.showStats();
                     return true;
                 case R.id.action_change_pass:
                     // TODO: Dialog for changing pass!!!
+                    controller.changePass(getFragmentManager());
                     return true;
                 case R.id.action_save_changes:
                     // TODO: Save changes
+                    controller.saveChanges();
                     return true;
                 case R.id.action_exit_admin:
                     // TODO: Exit admin mode!!!
+                    controller.exitAdminMode();
                     return true;
                 default:
                     //somebody else must process this action
@@ -50,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             //TODO : Ask for password dialog!!!
+            controller.askForPass();
             //I've finished with processing this click action
             return true;
         }

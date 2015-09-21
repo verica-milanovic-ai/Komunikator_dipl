@@ -24,8 +24,15 @@
         <activity
             android:name=".admin.AudioRecorder"
             android:label="@string/record_audio_title"
-            android:screenOrientation="landscape"></activity>
-
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".admin.Statistics"
+            android:label="@string/title_activity_statistics"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rs.etf.mv110185.komunikator_dipl.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

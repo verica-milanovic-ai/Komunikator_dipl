@@ -13,6 +13,24 @@
     <string name="save_changes">Запамти измене</string>
     <string name="change_pass">Промени лозинку</string>
     <string name="record_audio_title">Снимање звука - Комуникатор</string>
+    <string name="title_activity_statistics">Статистика - Комуникатор</string>
+    <string name="old_pass">унесите тренутну лозинку</string>
+    <string name="new_pass">унесите нову лозинку</string>
+    <string name="pass_confirm">поновите нову лозинку</string>
+    <string name="change_pass_dialog_title">Промена лозинке</string>
+    <string name="cancel_dialog_ch_pass">Поништи</string>
+    <string name="ok_dialog_ch_pass">Запамти</string>
+
+
+    <string name="doesnt_match_conf_new">Нова лозинка се не поклапа са поновљеним уносом!</string>
+    <string name="wrong_pass">Погрешна лозинка!</string>
+    <string name="login_admin">Администраторски режим рада</string>
+    <string name="password_admin_login">лозинка</string>
+    <string name="ok">ОК</string>
+    <string name="welcome_to_admin">Добродошли у администраторски режим рада</string>
+    <string name="wrong_pass_admin">Погрешна лозинка!</string>
+    <string name="pass_saved">Лозинка креирана!</string>
+    <string name="add_new_option">Додај нову опцију</string>
 
 
 </resources>

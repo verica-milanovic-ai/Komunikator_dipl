@@ -1,10 +1,9 @@
 package rs.etf.mv110185.komunikator_dipl.user;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 
-import java.io.File;
 import java.util.List;
 
 import rs.etf.mv110185.komunikator_dipl.db.DBHelper;
@@ -15,30 +14,14 @@ import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
  */
 public class OptionController {
     protected OptionModel model;
-    protected OptionView view;
+    //   protected OptionView view;
     protected Context context;
 
-    public OptionController(OptionModel model, OptionView view, Context context) {
-        this.model = model;
-        this.view = view;
-        this.context = context;
-    }
 
     public OptionController(OptionModel model, Context context) {
         this.model = model;
         this.context = context;
-        initControllerFromModel();
-    }
-
-    private void initControllerFromModel() {
-        view = new OptionView(context);
-        File image = new File(context.getFilesDir(), model.getImage_src());
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-        bitmap = Bitmap.createScaledBitmap(bitmap, 60, 60, true);
-
-        view.initOptionView(bitmap, model.getText());
-        view.setId(model.getId());
+        //   initControllerFromModel();
     }
 
     // called when user select Option => it wont be in main thread!!!
@@ -61,11 +44,37 @@ public class OptionController {
         this.model = model;
     }
 
-    public OptionView getView() {
-        return view;
+    /*  public OptionView getView() {
+          return view;
+      }
+
+      public void setView(OptionView view) {
+          this.view = view;
+      }
+  */
+    // methods for changing model, doesn't have any effect because user can't change model!
+    public void changeText(String newText) {
     }
 
-    public void setView(OptionView view) {
-        this.view = view;
+    // called in MainActivity to open Image Resource Select Dialog
+    public void selectImage(final AppCompatActivity mainActivity) {
+    }
+
+    // called in onActivityResult -> if (resultCode == RESULT_OK) if (requestCode == REQUEST_CAMERA)
+    public void handleImageFromCamera(Intent data) {
+    }
+
+    // called in onActivityResult -> if (resultCode == RESULT_OK) if (requestCode == SELECT_FILE)
+    public void handleImageFromGallery(Intent data) {
+    }
+
+    public void selectVoice(final AppCompatActivity mainActivity) {
+    }
+
+    // AudioRecorder did all job :D
+    public void handleVoiceFromRecorder(Intent data) {
+    }
+
+    public void handleSelectedVoice(Intent data) {
     }
 }

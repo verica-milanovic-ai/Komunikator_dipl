@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import rs.etf.mv110185.komunikator_dipl.ComunicatorController;
+import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 /**
@@ -28,20 +28,18 @@ import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
  */
 public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.OptionController {
 
-    public OptionController(OptionModel model, rs.etf.mv110185.komunikator_dipl.user.OptionView view, Context context) {
-        super(model, view, context);
-    }
-
     public OptionController(OptionModel model, Context context) {
         super(model, context);
     }
 
     // methods for changing model
+    @Override
     public void changeText(String newText) {
         model.setText(newText);
     }
 
     // called in MainActivity to open Image Resource Select Dialog
+    @Override
     public void selectImage(final AppCompatActivity mainActivity) {
         final CharSequence[] items = {"Фотографиши", "Изабери из галерије", "Поништи"};
 
@@ -52,15 +50,15 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Фотографиши")) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    mainActivity.startActivityForResult(intent, ComunicatorController.REQUEST_CAMERA);
+                    mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_CAMERA);
                 } else if (items[item].equals("Изабери из галерије")) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("image/*");
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, "Изабери фотографију"),
-                            ComunicatorController.SELECT_FILE);
+                            CommunicatorController.SELECT_FILE);
                 } else if (items[item].equals("Поништи")) {
                     dialog.dismiss();
                 }
@@ -70,6 +68,7 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
     }
 
     // called in onActivityResult -> if (resultCode == RESULT_OK) if (requestCode == REQUEST_CAMERA)
+    @Override
     public void handleImageFromCamera(Intent data) {
         Bitmap pict = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -88,11 +87,12 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
             Log.e("OptionController_admin", "output stream not ok!");
         }
         model.setImage_src(destination.getAbsolutePath());
-        view.setImage(pict);
+        //view.setImage(pict);
     }
 
     // called in onActivityResult -> if (resultCode == RESULT_OK) if (requestCode == SELECT_FILE)
-    public void handleImageFromGallery(Intent data, final AppCompatActivity mainActivity) {
+    @Override
+    public void handleImageFromGallery(Intent data) {
         Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};
 
@@ -119,11 +119,11 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
         options.inJustDecodeBounds = false;
         pict = BitmapFactory.decodeFile(selectedImagePath, options);
         model.setImage_src(selectedImagePath);
-        view.setImage(pict);
+        //view.setImage(pict);
 
     }
 
-
+    @Override
     public void selectVoice(final AppCompatActivity mainActivity) {
         final CharSequence[] items = {"Сними звук", "Изабери постојећи", "Поништи"};
 
@@ -135,15 +135,15 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
                 if (items[item].equals("Сними звук")) {
                     Intent intent = new Intent(mainActivity, AudioRecorder.class);
                     intent.putExtra("option_name", "option_" + model.getId());
-                    mainActivity.startActivityForResult(intent, ComunicatorController.REQUEST_AUDIO_RECORDER);
+                    mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_AUDIO_RECORDER);
                 } else if (items[item].equals("Изабери постојећи")) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("audio/*");
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, "Изабери постојећи"),
-                            ComunicatorController.SELECT_FILE);
+                            CommunicatorController.SELECT_FILE);
                 } else if (items[item].equals("Поништи")) {
                     dialog.dismiss();
                 }
@@ -152,10 +152,26 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
         builder.show();
     }
 
-    // TODO: DO THIS METHODS!!!
-    public void handleVoiceFromRecorder() {
+    // AudioRecorder did all job :D
+    @Override
+    public void handleVoiceFromRecorder(Intent data) {
+        model.setVoice_src(data.getStringExtra("voice_src"));
     }
 
-    public void handleSelectedVoice() {
+    @Override
+    public void handleSelectedVoice(Intent data) {
+        Uri selectedVoiceUri = data.getData();
+        String[] projection = {MediaStore.MediaColumns.DATA};
+
+        CursorLoader cursorLoader = new CursorLoader(
+                context,
+                selectedVoiceUri, projection, null, null, null);
+
+        Cursor cursor = cursorLoader.loadInBackground();
+
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        String selectedVoicePath = cursor.getString(column_index);
+        model.setVoice_src(selectedVoicePath);
     }
 }
