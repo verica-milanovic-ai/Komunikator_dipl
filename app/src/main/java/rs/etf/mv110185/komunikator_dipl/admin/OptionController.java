@@ -1,7 +1,6 @@
 package rs.etf.mv110185.komunikator_dipl.admin;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,10 +8,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,40 +26,118 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
+import rs.etf.mv110185.komunikator_dipl.R;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 /**
  * Created by Verica Milanovic on 15.09.2015..
  */
-public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.OptionController {
+public class OptionController {
 
-    public OptionController(OptionModel model, Context context) {
-        super(model, context);
+    OptionModel model;
+    AppCompatActivity context;
+    boolean canBeSaved = false;
+
+    public OptionController(OptionModel model, AppCompatActivity context) {
+        this.model = model;
+        this.context = context;
+        canBeSaved = false;
     }
 
     // methods for changing model
-    @Override
+
+
+    public OptionModel getModel() {
+        return model;
+    }
+
+    public void setModel(OptionModel model) {
+        this.model = model;
+    }
+
+    public boolean isCanBeSaved() {
+        canBeSaved = model.getImage_src() != null &&
+                ((model.getIs_final() == 1 && model.getFinal_text() != null)
+                        || (model.getIs_final() == 0 && model.getText() != null));
+        return canBeSaved;
+    }
+
+    public void setCanBeSaved(boolean canBeSaved) {
+        this.canBeSaved = canBeSaved;
+    }
+
     public void changeText(String newText) {
         model.setText(newText);
     }
 
+    public void askForOptionName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        // Get the layout inflater
+        LayoutInflater inflater = context.getLayoutInflater();
+        EditText et = (EditText) context.findViewById(R.id.option_name);
+        CheckBox cb = (CheckBox) context.findViewById(R.id.is_final_option);
+        EditText final_text = (EditText) context.findViewById(R.id.option_final_text);
+
+        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    final_text.setVisibility(View.VISIBLE);
+                    model.setIs_final(1);
+                } else {
+                    final_text.setVisibility(View.GONE);
+                    model.setIs_final(0);
+                }
+            }
+        });
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.option_name_dialog, null))
+                // Add action buttons
+                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // sign in the user ...
+                        model.setText(et.getText().toString());
+                        if (model.getIs_final() == 1) {
+                            model.setFinal_text(final_text.getText().toString());
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        builder.show();
+
+    }
+
     // called in MainActivity to open Image Resource Select Dialog
-    @Override
+
     public void selectImage(final AppCompatActivity mainActivity) {
         final CharSequence[] items = {"Фотографиши", "Изабери из галерије", "Поништи"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Додај фотографију");
         builder.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
+
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Фотографиши")) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("model", model);
+                    intent.putExtra("modelBundle", bundle);
                     mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_CAMERA);
                 } else if (items[item].equals("Изабери из галерије")) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("model", model);
+                    intent.putExtra("modelBundle", bundle);
                     intent.setType("image/*");
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, "Изабери фотографију"),
@@ -68,7 +151,6 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
     }
 
     // called in onActivityResult -> if (resultCode == RESULT_OK) if (requestCode == REQUEST_CAMERA)
-    @Override
     public void handleImageFromCamera(Intent data) {
         Bitmap pict = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -91,7 +173,6 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
     }
 
     // called in onActivityResult -> if (resultCode == RESULT_OK) if (requestCode == SELECT_FILE)
-    @Override
     public void handleImageFromGallery(Intent data) {
         Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};
@@ -123,7 +204,6 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
 
     }
 
-    @Override
     public void selectVoice(final AppCompatActivity mainActivity) {
         final CharSequence[] items = {"Сними звук", "Изабери постојећи", "Поништи"};
 
@@ -135,15 +215,21 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
                 if (items[item].equals("Сними звук")) {
                     Intent intent = new Intent(mainActivity, AudioRecorder.class);
                     intent.putExtra("option_name", "option_" + model.getId());
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("model", model);
+                    intent.putExtra("modelBundle", bundle);
                     mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_AUDIO_RECORDER);
                 } else if (items[item].equals("Изабери постојећи")) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("audio/*");
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("model", model);
+                    intent.putExtra("modelBundle", bundle);
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, "Изабери постојећи"),
-                            CommunicatorController.SELECT_FILE);
+                            CommunicatorController.SELECT_VOICE_FILE);
                 } else if (items[item].equals("Поништи")) {
                     dialog.dismiss();
                 }
@@ -153,12 +239,10 @@ public class OptionController extends rs.etf.mv110185.komunikator_dipl.user.Opti
     }
 
     // AudioRecorder did all job :D
-    @Override
     public void handleVoiceFromRecorder(Intent data) {
         model.setVoice_src(data.getStringExtra("voice_src"));
     }
 
-    @Override
     public void handleSelectedVoice(Intent data) {
         Uri selectedVoiceUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};

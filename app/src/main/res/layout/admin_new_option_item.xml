@@ -6,10 +6,11 @@
 
 
     <Button
-        android:id="@+id/text"
+        android:id="@+id/add_new_opt_btn"
         android:layout_width="100dp"
         android:layout_height="110dp"
         android:clickable="true"
+        android:gravity="center"
         android:singleLine="false"
         android:text="@string/add_new_option"
         android:textAlignment="center"

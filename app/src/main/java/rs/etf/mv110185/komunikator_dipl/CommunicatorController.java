@@ -1,13 +1,19 @@
 package rs.etf.mv110185.komunikator_dipl;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -27,13 +33,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import rs.etf.mv110185.komunikator_dipl.admin.OptionController;
 import rs.etf.mv110185.komunikator_dipl.admin.dialog.ChangePassDialog;
 import rs.etf.mv110185.komunikator_dipl.db.DBContract;
 import rs.etf.mv110185.komunikator_dipl.db.DBHelper;
 import rs.etf.mv110185.komunikator_dipl.db.FlagModel;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
-import rs.etf.mv110185.komunikator_dipl.user.OptionController;
 
 /**
  * Created by Verica Milanovic on 17.09.2015..
@@ -42,20 +49,23 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
     public static final int REQUEST_CAMERA = 1;
     public static final int SELECT_FILE = 2;
+    public static final int SELECT_VOICE_FILE = 5;
+    public static final int SELECT_PROFILE_IMAGE = 4;
     public static final int REQUEST_AUDIO_RECORDER = 3;
 
     public static int IS_ADMIN = 0;
     private String password;
 
-    private List<OptionController> options;
+    private List<OptionModel> user_options;
     private List<OptionModel> userPathList;
-    private OptionController newOption, currentOption = null;
+    private OptionModel currentOption = null;
+    private List<OptionController> newOption = null;
     private AppCompatActivity mainActivityContext;
     private MediaPlayer mPlayer;
 
     public CommunicatorController(AppCompatActivity context) {
         mainActivityContext = context;
-        newOption = new OptionController(new OptionModel(), context);
+        newOption = new ArrayList<>();
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -70,46 +80,138 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         }.execute();
 
         addFirstOptions();
+        setListeners();
+    }
+
+    private void setListeners() {
+        GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
+        option_gv.setOnItemClickListener(this);
+
+        ImageView profPict = (ImageView) mainActivityContext.findViewById(R.id.profilePicture);
+        profPict.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (IS_ADMIN == 0) {
+                    addFirstOptions();
+                } else {
+                    changeProfilePicture();
+                }
+            }
+        });
+
+        ImageButton adminButton = (ImageButton) mainActivityContext.findViewById(R.id.adminButton);
+        adminButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (IS_ADMIN == 0) {
+                    askForPass();
+                } else {
+
+                }
+            }
+        });
+    }
+
+    private void changeProfilePicture() {
+        Intent intent = new Intent(
+                Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        mainActivityContext.startActivityForResult(
+                Intent.createChooser(intent, "Изабери фотографију"),
+                CommunicatorController.SELECT_PROFILE_IMAGE);
+    }
+
+    public void handleProfileImage(Intent data) {
+        ImageView profP = (ImageView) mainActivityContext.findViewById(R.id.profilePicture);
+
+        AsyncTask<Void, Void, Bitmap> a = new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                Uri selectedImageUri = data.getData();
+                String[] projection = {MediaStore.MediaColumns.DATA};
+
+                CursorLoader cursorLoader = new CursorLoader(
+                        mainActivityContext,
+                        selectedImageUri, projection, null, null, null);
+
+                Cursor cursor = cursorLoader.loadInBackground();
+
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                cursor.moveToFirst();
+                String selectedImagePath = cursor.getString(column_index);
+                Bitmap pict;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(selectedImagePath, options);
+                // TODO : steluj da bude lepo prikazano :D !!!
+                final int REQUIRED_SIZE = 200;
+                int scale = 1;
+                while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+                    scale *= 2;
+                options.inSampleSize = scale;
+                options.inJustDecodeBounds = false;
+                pict = BitmapFactory.decodeFile(selectedImagePath, options);
+
+                DBHelper helper = new DBHelper(mainActivityContext);
+                helper.updateFlag(new FlagModel("profile_picture", selectedImagePath));
+                return pict;
+            }
+        }.execute();
+
+        Bitmap pict = null;
+        try {
+            pict = a.get();
+            profP.setImageBitmap(pict);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void addFirstOptions() {
         // empty at the beginning
         userPathList = new ArrayList<>();
+        currentOption = null;
 
         GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
+        // TODO: DON'T KNOW IF THIS IS POSSIBLE!
+        if (option_gv.getAdapter() == null) {
+            DBHelper helper = new DBHelper(mainActivityContext);
+            Cursor cursor = helper.getAllOptions_cursor(null);
+            String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
+            int[] viewIdList = {R.id.imageButton, R.id.textView};
+            SimpleCursorAdapter la = new SimpleCursorAdapter(mainActivityContext,
+                    R.layout.admin_option_item, cursor, fieldList, viewIdList,
+                    0);
+            la.setViewBinder(new ViewBinder() {
 
-        DBHelper helper = new DBHelper(mainActivityContext);
-        Cursor cursor = helper.getAllOptions_cursor(null);
-        String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
-        int[] viewIdList = {R.id.imageButton, R.id.textView};
-        SimpleCursorAdapter la = new SimpleCursorAdapter(mainActivityContext,
-                R.layout.user_option_item, cursor, fieldList, viewIdList,
-                0);
-
-        la.setViewBinder(new ViewBinder() {
-
-            @Override
-            public boolean setViewValue(View view, Cursor cursor,
-                                        int columnIndex) {
-                if (columnIndex == cursor
-                        .getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC)) {
-                    File image = new File(mainActivityContext.getFilesDir(), cursor.getString(columnIndex));
-                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                    bitmap = Bitmap.createScaledBitmap(bitmap, 60, 60, true);
-                    ImageButton ib = (ImageButton) view;
-                    ib.setImageBitmap(bitmap);
-                    return true;
-                } else if (columnIndex == cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_TEXT)) {
-                    TextView tv = (TextView) view;
-                    tv.setText(cursor.getString(columnIndex));
-                    return true;
+                @Override
+                public boolean setViewValue(View view, Cursor cursor,
+                                            int columnIndex) {
+                    if (columnIndex == cursor
+                            .getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC)) {
+                        File image = new File(mainActivityContext.getFilesDir(), cursor.getString(columnIndex));
+                        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+                        bitmap = Bitmap.createScaledBitmap(bitmap, 60, 60, true);
+                        ImageButton ib = (ImageButton) view;
+                        ib.setImageBitmap(bitmap);
+                        return true;
+                    } else if (columnIndex == cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_TEXT)) {
+                        TextView tv = (TextView) view;
+                        tv.setText(cursor.getString(columnIndex));
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        option_gv.setAdapter(la);
-        option_gv.setOnItemClickListener(this);
+            });
+            option_gv.setAdapter(la);
+        }
+
     }
 
     private void setPasswordForCommunicator() {
@@ -187,14 +289,10 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         }.execute();
     }
 
-    // TODO: IMPLEMENT!!!
-    public void saveChanges() {
-
-    }
-
     public void exitAdminMode() {
-        IS_ADMIN = 0;
+        changeToUserView();
     }
+
 
     public void askForPass() {
         // create dialog! :D
@@ -214,7 +312,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 if (password.equals(pass.getText())) {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.welcome_to_admin), Toast.LENGTH_LONG).show();
-                    IS_ADMIN = 1;
+                    changeToAdminView();
                     login.dismiss();
                 } else {
                     Toast.makeText(mainActivityContext,
@@ -237,6 +335,25 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     }
 
 
+    private void changeToUserView() {
+        if (IS_ADMIN == 1) {
+            IS_ADMIN = 0;
+            currentOption = null;
+            userPathList = new ArrayList<>();
+            changeOptions();
+        }
+    }
+
+    private void changeToAdminView() {
+        if (IS_ADMIN == 0) {
+            IS_ADMIN = 1;
+            currentOption = null;
+            userPathList = new ArrayList<>();
+            changeOptions();
+        }
+    }
+
+
     //////////////////////////////////// PLAYER!!!  ////////////////////////////////////
 
     private void startPlaying(String mFileName, int position) {
@@ -245,7 +362,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
             @Override
             public void onCompletion(MediaPlayer mp) {
                 stopPlaying();
-                changeOptions(currentOption, position);
+                changeOptions(position);
             }
         });
         try {
@@ -266,16 +383,15 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (currentOption.getModel().getVoice_src() != null) {
-            startPlaying(currentOption.getModel().getVoice_src(), position);
+        if (currentOption.getVoice_src() != null) {
+            startPlaying(currentOption.getVoice_src(), position);
         } else {
-            changeOptions(currentOption, position);
+            changeOptions(position);
         }
     }
 
-    private void changeOptions(OptionController option, int position) {
-        currentOption = options.get(position);
-        userPathList.add(currentOption.getModel());
+    private void changeOptions() {
+        userPathList.add(currentOption);
 
         GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
         LinearLayout ll = (LinearLayout) mainActivityContext.findViewById(R.id.userPathList);
@@ -294,20 +410,26 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                             ImageView iv = new ImageView(mainActivityContext);
                             iv.setImageBitmap(bitmap);
                             iv.setOnClickListener(arg0[0]);
+                            //TO RECOGNIZE ImageView IN LISTENER :D
+                            iv.setTag(opt);
                             ll.addView(iv);
                         }
 
                         DBHelper helper = new DBHelper(mainActivityContext);
-                        fillOptions(helper.getAllOptions(currentOption.getModel()));
-                        Cursor cursor = helper.getAllOptions_cursor(currentOption.getModel());
+                        fillOptions(helper.getAllOptions(currentOption));
+                        Cursor cursor = helper.getAllOptions_cursor(currentOption);
                         String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
-                        int[] viewIdList = {R.id.imageButton, R.id.textView};
+                        int[] viewIdList = {R.id.imageButton, R.id.textView, R.id.del_option};
 
 
-                        if (currentOption.getModel().getIs_final() == 0) {
+                        if (currentOption.getIs_final() == 0) {
                             SimpleCursorAdapter la = new SimpleCursorAdapter(mainActivityContext,
-                                    R.layout.user_option_item, cursor, fieldList, viewIdList,
+                                    R.layout.admin_option_item, cursor, fieldList, viewIdList,
                                     0);
+
+                            option_gv.setVisibility(View.VISIBLE);
+                            TextView tv_final = (TextView) mainActivityContext.findViewById(R.id.finalText);
+                            tv_final.setVisibility(View.GONE);
 
                             la.setViewBinder(new ViewBinder() {
                                 @Override
@@ -318,23 +440,85 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                                         File image = new File(mainActivityContext.getFilesDir(), cursor.getString(columnIndex));
                                         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                                         Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                                        bitmap = Bitmap.createScaledBitmap(bitmap, 60, 60, true);
+                                        bitmap = Bitmap.createScaledBitmap(bitmap, 70, 60, true);
                                         ImageButton ib = (ImageButton) view;
                                         ib.setImageBitmap(bitmap);
+                                        if (IS_ADMIN == 1) {
+                                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(70, 60);
+                                            params.setMargins(0, 0, 0, 10);
+                                            ib.setLayoutParams(params);
+                                            ib.setTag(cursor.getInt(cursor.getColumnIndex("id")));
+                                            ib.setOnLongClickListener(new View.OnLongClickListener() {
+                                                @Override
+                                                public boolean onLongClick(View v) {
+                                                    if (IS_ADMIN == 1) {
+                                                        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
+                                                        CharSequence[] items = {"постави слику", "постави текст", "постави звук"};
+                                                        builder.setItems(items, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                DBHelper helper = new DBHelper(mainActivityContext);
+                                                                OptionController c = new OptionController(helper.getOption((int) ib.getTag()), mainActivityContext);
+                                                                if (items[which].equals("постави слику")) {
+                                                                    c.selectImage(mainActivityContext);
+                                                                } else if (items[which].equals("постави текст"))
+                                                                    c.askForOptionName();
+                                                                else if (items[which].equals("постави звук"))
+                                                                    c.selectVoice(mainActivityContext);
+                                                            }
+                                                        });
+                                                        builder.show();
+                                                    }
+                                                    return true;
+                                                }
+                                            });
+                                        } else {
+                                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(70, 60);
+                                            params.setMargins(0, 10, 0, 10);
+                                            ib.setLayoutParams(params);
+                                        }
                                         return true;
                                     } else if (columnIndex == cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_TEXT)) {
                                         TextView tv = (TextView) view;
                                         tv.setText(cursor.getString(columnIndex));
                                         return true;
                                     }
+                                    if (view.getId() == R.id.del_option && IS_ADMIN == 1) {
+                                        view.setVisibility(View.VISIBLE);
+                                        view.setTag(cursor.getInt(cursor.getColumnIndex("id")));
+                                        view.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                DBHelper helper = new DBHelper(mainActivityContext);
+                                                OptionModel mod = new OptionModel();
+                                                mod.setId((int) view.getTag());
+                                                helper.deleteOption(mod);
+                                                changeOptions();
+                                            }
+                                        });
+                                    } else if (view.getId() == R.id.del_option)
+                                        view.setVisibility(View.GONE);
                                     return false;
                                 }
                             });
                             option_gv.setAdapter(la);
+                            if (IS_ADMIN == 1) {
+                                LinearLayout ll = (LinearLayout) mainActivityContext.getLayoutInflater().inflate(R.layout.admin_new_option_item, null);
+                                option_gv.addView(ll, option_gv.getChildCount());
+                                ll.findViewById(R.id.add_new_opt_btn).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        newOption.add(new OptionController(new OptionModel(), mainActivityContext));
+                                        int index = newOption.size() - 1;
+                                        newOption.get(index).askForOptionName();
+                                        newOption.get(index).getModel().setParent(currentOption.getId());
+                                    }
+                                });
+                            }
                         } else {
-                            option_gv.setVisibility(View.INVISIBLE);
+                            option_gv.setVisibility(View.GONE);
                             TextView tv_final = (TextView) mainActivityContext.findViewById(R.id.finalText);
-                            tv_final.setText(currentOption.getModel().getFinal_text());
+                            tv_final.setText(currentOption.getFinal_text());
                             tv_final.setVisibility(View.VISIBLE);
                         }
                     }
@@ -344,17 +528,80 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         }.execute(this);
     }
 
+
+    private void changeOptions(int position) {
+        currentOption = user_options.get(position);
+        changeOptions();
+    }
+
     private void fillOptions(List<OptionModel> allOptions) {
-        options = new ArrayList<>();
+        user_options = new ArrayList<>();
         for (int i = 0; i < allOptions.size(); i++) {
-            options.add(new OptionController(allOptions.get(i), mainActivityContext));
+            user_options.add(allOptions.get(i));
         }
     }
 
     // MUST RETURN TO SELECTED LEVEL
     @Override
     public void onClick(View v) {
-        // TODO: odsecem deo liste koji je posle currOption-a
-        // TODO: ponovo popunim gridView
+        //  odsecem deo liste koji je posle currOption-a
+        //  ponovo popunim gridView
+        ImageView iv = (ImageView) v;
+        OptionModel mod = (OptionModel) iv.getTag();
+        int index = userPathList.indexOf(mod);
+        userPathList = userPathList.subList(0, index + 1);
+        currentOption = mod;
+        changeOptions();
+    }
+
+    public void saveChanges() {
+        boolean may_save = true;
+        for (OptionController cont : newOption)
+            if (!cont.isCanBeSaved()) {
+                may_save = false;
+                Toast.makeText(mainActivityContext, mainActivityContext.getString(R.string.cant_be_saved), Toast.LENGTH_LONG);
+                return;
+            }
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                DBHelper helper = new DBHelper(mainActivityContext);
+                for (OptionController opt : newOption) {
+                    helper.addOption(opt.getModel());
+                }
+                newOption = new ArrayList<OptionController>();
+                return null;
+            }
+        }.execute();
+        changeOptions();
+    }
+
+
+    public void onActivityOKResult(int requestCode, Intent data) {
+        Bundle bundle;
+        OptionModel mod;
+        if (requestCode != SELECT_PROFILE_IMAGE) {
+            bundle = data.getBundleExtra("modelBundle");
+            mod = (OptionModel) bundle.getSerializable("model");
+            OptionController tmp = new OptionController(mod, mainActivityContext);
+            switch (requestCode) {
+                case REQUEST_CAMERA:
+                    tmp.handleImageFromCamera(data);
+                    break;
+                case REQUEST_AUDIO_RECORDER:
+                    tmp.handleVoiceFromRecorder(data);
+                    break;
+                case SELECT_VOICE_FILE:
+                    tmp.handleSelectedVoice(data);
+                    break;
+                case SELECT_FILE:
+                    tmp.handleImageFromGallery(data);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            handleProfileImage(data);
+        }
     }
 }

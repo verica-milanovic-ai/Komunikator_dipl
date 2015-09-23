@@ -1,0 +1,2 @@
+INSERT INTO flag (name, value) VALUES ('password', NULL);
+INSERT INTO flag (name, value) VALUES ('profile_picture', NULL);

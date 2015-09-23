@@ -1,6 +1,7 @@
 package rs.etf.mv110185.komunikator_dipl;
 // ANDROID's package
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -40,15 +41,12 @@ public class MainActivity extends AppCompatActivity {
                     controller.showStats();
                     return true;
                 case R.id.action_change_pass:
-                    // TODO: Dialog for changing pass!!!
                     controller.changePass(getFragmentManager());
                     return true;
                 case R.id.action_save_changes:
-                    // TODO: Save changes
                     controller.saveChanges();
                     return true;
                 case R.id.action_exit_admin:
-                    // TODO: Exit admin mode!!!
                     controller.exitAdminMode();
                     return true;
                 default:
@@ -56,12 +54,18 @@ public class MainActivity extends AppCompatActivity {
                     return super.onContextItemSelected(item);
             }
         } else {
-            //TODO : Ask for password dialog!!!
             controller.askForPass();
             //I've finished with processing this click action
             return true;
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            controller.onActivityOKResult(requestCode, data);
+        }
 
+    }
 }

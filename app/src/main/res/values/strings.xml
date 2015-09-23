@@ -10,7 +10,7 @@
 
     <string name="stats">Статистика</string>
     <string name="exit_admin_mode">Изађи из администраторског режима рада</string>
-    <string name="save_changes">Запамти измене</string>
+    <string name="save">Запамти</string>
     <string name="change_pass">Промени лозинку</string>
     <string name="record_audio_title">Снимање звука - Комуникатор</string>
     <string name="title_activity_statistics">Статистика - Комуникатор</string>
@@ -18,8 +18,7 @@
     <string name="new_pass">унесите нову лозинку</string>
     <string name="pass_confirm">поновите нову лозинку</string>
     <string name="change_pass_dialog_title">Промена лозинке</string>
-    <string name="cancel_dialog_ch_pass">Поништи</string>
-    <string name="ok_dialog_ch_pass">Запамти</string>
+    <string name="cancel">Поништи</string>
 
 
     <string name="doesnt_match_conf_new">Нова лозинка се не поклапа са поновљеним уносом!</string>
@@ -31,6 +30,13 @@
     <string name="wrong_pass_admin">Погрешна лозинка!</string>
     <string name="pass_saved">Лозинка креирана!</string>
     <string name="add_new_option">Додај нову опцију</string>
+    <string name="new_option_name">Постави назив нове опције</string>
+    <string name="option_name">име опције</string>
+    <string name="save_changes">Запамти измене</string>
+    <string name="final_option">крајња опција</string>
+    <string name="final_text">крајња реченица</string>
+    <string name="cant_be_saved">Нисте поставили слику или текст за новокреирану опцију!</string>
+    <string name="final_text_will_show">Цела реченица ће бити приказана на екрану</string>
 
 
 </resources>

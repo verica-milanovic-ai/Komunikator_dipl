@@ -1,9 +1,11 @@
 package rs.etf.mv110185.komunikator_dipl.db;
 
+import java.io.Serializable;
+
 /**
  * Created by Verica Milanovic  on 8/2/2015.
  */
-public class OptionModel {
+public class OptionModel implements Serializable {
     private int id;
     private String image_src;
     private String voice_src;
@@ -14,6 +16,9 @@ public class OptionModel {
     private String final_text;
 
     public OptionModel() {
+        image_src = null;
+        text = null;
+        final_text = null;
     }
 
     public OptionModel(String image_src, String voice_src, int is_sub_option, int is_final, int parent, String text, String final_text) {

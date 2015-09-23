@@ -2,6 +2,7 @@ package rs.etf.mv110185.komunikator_dipl.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -13,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by Verica Milanovic  on 8/2/2015.
@@ -249,6 +251,26 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // C R U D operations => (create "add", read "get", update, delete) option
 
+    public int getLastOptionID() {
+        // 1. get reference to readable DB
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String MY_QUERY = "SELECT MAX(id) AS id FROM option";
+
+        // 2. build query
+        Cursor cursor =
+                db.rawQuery(MY_QUERY, null); // h. limit
+
+        // 3. if we got results get the first one
+        int max_id = -1;
+        if (cursor != null) {
+            cursor.moveToFirst();
+            max_id = cursor.getInt(cursor.getColumnIndex("id"));
+        }
+        // 5. return option
+        return max_id;
+    }
+
+
     public OptionModel getOption(int id) {
         // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
@@ -336,6 +358,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return cursor;
     }
+
     public List<OptionModel> getAllOptions(OptionModel model) {
         List<OptionModel> opts = new LinkedList<>();
 
@@ -426,10 +449,68 @@ public class DBHelper extends SQLiteOpenHelper {
                     db.execSQL(line);
                 }
 
+                fillFromAssets(db);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        private void fillFromAssets(SQLiteDatabase db) {
+
+            AssetManager manager = context.getAssets();
+            try {
+                String[] files_n_folders = manager.list("options_images");
+                for (int i = 0; i < files_n_folders.length; i++) {
+                    // u osnovnom folderu su sve folderi!!!!
+                    fillFromFolder(files_n_folders[i], manager, -1);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                manager.close();
+            }
+
+
+        }
+
+        private void fillFromFolder(String files_n_folder, AssetManager manager, int parent_id) throws IOException {
+            String folder_name = files_n_folder;
+            StringTokenizer tokenizer = new StringTokenizer(folder_name, "/");
+            String[] content = manager.list(folder_name);
+            for (int i = 0; i < content.length; i++) {
+                //folders begins with number
+                if (content[i].charAt(0) >= '0' && content[i].charAt(0) <= '9') {
+                    String path = folder_name + "/" + content[i];
+                    String name = content[i].substring(2);
+                    OptionModel model = new OptionModel();
+                    model.setText(name);
+                    model.setParent(parent_id);
+                    // CREATE OPTION IN DATABASE!!!
+                    addOption(model);
+
+                    fillFromFolder(path, manager, getLastOptionID());
+
+                } else {    //files don't begin with number
+                    String option_name = content[i];
+                    String path = folder_name + "/" + option_name;
+                    OptionModel tmp = new OptionModel();
+                    tmp.setImage_src(path);
+                    tmp.setText(option_name);
+                    tmp.setFinal_text(option_name);
+                    boolean isFinal = false;
+                    String folder_path = folder_name.toLowerCase();
+                    String name = option_name.toLowerCase();
+                    isFinal = !folder_path.endsWith(name);
+                    if (isFinal)
+                        tmp.setId(getLastOptionID());
+                    else
+                        tmp.setId(parent_id);
+                    tmp.setIs_final(isFinal ? 1 : 0);
+                    updateOption(tmp);
+                }
+            }
         }
 
         /**

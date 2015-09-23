@@ -47,7 +47,7 @@
             android:id="@+id/btnCancel"
             android:layout_width="145dp"
             android:layout_height="60dp"
-            android:text="@string/cancel_dialog_ch_pass" />
+            android:text="@string/cancel" />
 
         <Button
             android:id="@+id/btnLogin"

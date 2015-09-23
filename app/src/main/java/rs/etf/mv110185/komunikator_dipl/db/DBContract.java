@@ -11,8 +11,6 @@ public final class DBContract {
 
     public static abstract class CommunicatorOption implements BaseColumns {
         public static final String TABLE_NAME = "option";
-        public static final String COLUMN_NAME_NAME = "name";
-        public static final String COLUMN_NAME_VALUE = "value";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_IMAGE_SRC = "image_src";
         public static final String COLUMN_NAME_VOICE_SRC = "voice_src";
