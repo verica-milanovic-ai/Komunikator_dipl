@@ -118,11 +118,11 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         mainActivityContext.startActivityForResult(
-                Intent.createChooser(intent, "Изабери фотографију"),
+                Intent.createChooser(intent, mainActivityContext.getString(R.string.choose_image)),
                 CommunicatorController.SELECT_PROFILE_IMAGE);
     }
 
-    public void handleProfileImage(Intent data) {
+    public void handleProfileImage(final Intent data) {
         ImageView profP = (ImageView) mainActivityContext.findViewById(R.id.profilePicture);
 
         AsyncTask<Void, Void, Bitmap> a = new AsyncTask<Void, Void, Bitmap>() {
@@ -221,8 +221,8 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         newPass.setContentView(R.layout.create_pass_dialog);
 
         // Init button of login GUI
-        EditText pass = (EditText) newPass.findViewById(R.id.etxtPassword);
-        EditText conf_pass = (EditText) newPass.findViewById(R.id.etxtPassword_conf);
+        final EditText pass = (EditText) newPass.findViewById(R.id.etxtPassword);
+        final EditText conf_pass = (EditText) newPass.findViewById(R.id.etxtPassword_conf);
         Button btnLogin = (Button) newPass.findViewById(R.id.btnLogin);
         Button btnCancel = (Button) newPass.findViewById(R.id.btnCancel);
 
@@ -276,7 +276,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         }
     }
 
-    private void saveNewPass(String newPass) {
+    private void saveNewPass(final String newPass) {
         // SAVE PASS TO DATABASE
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -301,7 +301,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         login.setContentView(R.layout.login_dialog);
 
         // Init button of login GUI
-        EditText pass = (EditText) login.findViewById(R.id.etxtPassword);
+        final EditText pass = (EditText) login.findViewById(R.id.etxtPassword);
         Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
         Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
 
@@ -356,7 +356,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
     //////////////////////////////////// PLAYER!!!  ////////////////////////////////////
 
-    private void startPlaying(String mFileName, int position) {
+    private void startPlaying(String mFileName, final int position) {
         mPlayer = new MediaPlayer();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -393,12 +393,12 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     private void changeOptions() {
         userPathList.add(currentOption);
 
-        GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
-        LinearLayout ll = (LinearLayout) mainActivityContext.findViewById(R.id.userPathList);
+        final GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
+        final LinearLayout ll = (LinearLayout) mainActivityContext.findViewById(R.id.userPathList);
 
         new AsyncTask<View.OnClickListener, Void, Void>() {
             @Override
-            protected Void doInBackground(View.OnClickListener... arg0) {
+            protected Void doInBackground(final View.OnClickListener... arg0) {
                 mainActivityContext.runOnUiThread(new Runnable() {
                     public void run() {
                         ll.removeAllViewsInLayout();
@@ -433,7 +433,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
                             la.setViewBinder(new ViewBinder() {
                                 @Override
-                                public boolean setViewValue(View view, Cursor cursor,
+                                public boolean setViewValue(final View view, Cursor cursor,
                                                             int columnIndex) {
                                     if (columnIndex == cursor
                                             .getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC)) {
@@ -441,7 +441,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                                         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                                         Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
                                         bitmap = Bitmap.createScaledBitmap(bitmap, 70, 60, true);
-                                        ImageButton ib = (ImageButton) view;
+                                        final ImageButton ib = (ImageButton) view;
                                         ib.setImageBitmap(bitmap);
                                         if (IS_ADMIN == 1) {
                                             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(70, 60);
@@ -453,17 +453,18 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                                                 public boolean onLongClick(View v) {
                                                     if (IS_ADMIN == 1) {
                                                         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
-                                                        CharSequence[] items = {"постави слику", "постави текст", "постави звук"};
+                                                        final CharSequence[] items = {mainActivityContext.getString(R.string.set_image),
+                                                                mainActivityContext.getString(R.string.set_text), mainActivityContext.getString(R.string.set_sound)};
                                                         builder.setItems(items, new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 DBHelper helper = new DBHelper(mainActivityContext);
                                                                 OptionController c = new OptionController(helper.getOption((int) ib.getTag()), mainActivityContext);
-                                                                if (items[which].equals("постави слику")) {
+                                                                if (items[which].equals(mainActivityContext.getString(R.string.set_image))) {
                                                                     c.selectImage(mainActivityContext);
-                                                                } else if (items[which].equals("постави текст"))
+                                                                } else if (items[which].equals(mainActivityContext.getString(R.string.set_text)))
                                                                     c.askForOptionName();
-                                                                else if (items[which].equals("постави звук"))
+                                                                else if (items[which].equals(mainActivityContext.getString(R.string.set_sound)))
                                                                     c.selectVoice(mainActivityContext);
                                                             }
                                                         });

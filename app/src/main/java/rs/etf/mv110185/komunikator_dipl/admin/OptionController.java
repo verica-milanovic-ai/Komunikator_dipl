@@ -74,9 +74,9 @@ public class OptionController {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         // Get the layout inflater
         LayoutInflater inflater = context.getLayoutInflater();
-        EditText et = (EditText) context.findViewById(R.id.option_name);
+        final EditText et = (EditText) context.findViewById(R.id.option_name);
         CheckBox cb = (CheckBox) context.findViewById(R.id.is_final_option);
-        EditText final_text = (EditText) context.findViewById(R.id.option_final_text);
+        final EditText final_text = (EditText) context.findViewById(R.id.option_final_text);
 
         cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -118,20 +118,20 @@ public class OptionController {
     // called in MainActivity to open Image Resource Select Dialog
 
     public void selectImage(final AppCompatActivity mainActivity) {
-        final CharSequence[] items = {"Фотографиши", "Изабери из галерије", "Поништи"};
+        final CharSequence[] items = {context.getString(R.string.take_photo), context.getString(R.string.choose_from_gallery), context.getString(R.string.cancel)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Додај фотографију");
+        builder.setTitle(context.getString(R.string.add_photo));
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int item) {
-                if (items[item].equals("Фотографиши")) {
+                if (items[item].equals(context.getString(R.string.take_photo))) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
                     mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_CAMERA);
-                } else if (items[item].equals("Изабери из галерије")) {
+                } else if (items[item].equals(context.getString(R.string.choose_from_gallery))) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -140,9 +140,9 @@ public class OptionController {
                     intent.putExtra("modelBundle", bundle);
                     intent.setType("image/*");
                     mainActivity.startActivityForResult(
-                            Intent.createChooser(intent, "Изабери фотографију"),
+                            Intent.createChooser(intent, context.getString(R.string.choose_image)),
                             CommunicatorController.SELECT_FILE);
-                } else if (items[item].equals("Поништи")) {
+                } else if (items[item].equals(context.getString(R.string.cancel))) {
                     dialog.dismiss();
                 }
             }
@@ -205,21 +205,23 @@ public class OptionController {
     }
 
     public void selectVoice(final AppCompatActivity mainActivity) {
-        final CharSequence[] items = {"Сними звук", "Изабери постојећи", "Поништи"};
+        final CharSequence[] items = {context.getString(R.string.record_audio), context.getString(R.string.choose_existing), context.getString(R.string.cancel)
+        };
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Додај звук");
+        builder.setTitle(context.getString(R.string.add_sound));
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                if (items[item].equals("Сними звук")) {
+                if (items[item].equals(context.getString(R.string.record_audio))) {
                     Intent intent = new Intent(mainActivity, AudioRecorder.class);
                     intent.putExtra("option_name", "option_" + model.getId());
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
                     mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_AUDIO_RECORDER);
-                } else if (items[item].equals("Изабери постојећи")) {
+                } else if (items[item].equals(context.getString(R.string.choose_existing))) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -228,9 +230,9 @@ public class OptionController {
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
                     mainActivity.startActivityForResult(
-                            Intent.createChooser(intent, "Изабери постојећи"),
+                            Intent.createChooser(intent, context.getString(R.string.choose_existing)),
                             CommunicatorController.SELECT_VOICE_FILE);
-                } else if (items[item].equals("Поништи")) {
+                } else if (items[item].equals(context.getString(R.string.cancel))) {
                     dialog.dismiss();
                 }
             }

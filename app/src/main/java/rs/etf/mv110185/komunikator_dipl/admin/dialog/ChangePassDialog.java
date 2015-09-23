@@ -32,30 +32,30 @@ public class ChangePassDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Context context = getActivity();
+        final Context context = getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialog_layout = inflater.inflate(R.layout.change_pass_dialog, null);
 
-        String pass = getArguments().getString("pass");
-        EditText old = (EditText) dialog_layout.findViewById(R.id.old_pass);
-        EditText pnew = (EditText) dialog_layout.findViewById(R.id.new_pass);
-        EditText pconf = (EditText) dialog_layout.findViewById(R.id.pass_confirm);
+        final String pass = getArguments().getString(context.getString(R.string.pass));
+        final EditText old = (EditText) dialog_layout.findViewById(R.id.old_pass);
+        final EditText pnew = (EditText) dialog_layout.findViewById(R.id.new_pass);
+        final EditText pconf = (EditText) dialog_layout.findViewById(R.id.pass_confirm);
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(inflater.inflate(R.layout.change_pass_dialog, null))
                 // Add action buttons
-                .setPositiveButton(R.string.ok_dialog_ch_pass, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         if (old.getText().equals(pass)) {
                             if (pnew.getText().equals(pconf.getText())) {
                                 // OK! CHANGE PASS WRITE IT INTO DATABASE IN ASYNC TASK!
                                 OK = 1;
-                                getActivity().getIntent().putExtra("retVal", OK);
-                                getActivity().getIntent().putExtra("newPass", pnew.getText());
+                                getActivity().getIntent().putExtra(context.getString(R.string.ret_val), OK);
+                                getActivity().getIntent().putExtra(context.getString(R.string.new_pass_txt), pnew.getText());
                                 ChangePassDialog.this.getDialog().dismiss();
                             } else {
                                 // NOK! CONF AND NEW MUST BE THE SAME!
@@ -79,11 +79,11 @@ public class ChangePassDialog extends DialogFragment {
                         }
                     }
                 })
-                .setNegativeButton(R.string.cancel_dialog_ch_pass, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // this means that admin doesn't want to save new password/or to change it.
                         OK = 0;
-                        getActivity().getIntent().putExtra("retVal", OK);
+                        getActivity().getIntent().putExtra(getString(R.string.ret_val), OK);
                         ChangePassDialog.this.getDialog().cancel();
                     }
                 });

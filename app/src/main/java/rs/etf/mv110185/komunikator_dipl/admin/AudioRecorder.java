@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 
 import java.io.IOException;
 
+import rs.etf.mv110185.komunikator_dipl.R;
+
 
 public class AudioRecorder extends Activity {
     private static final String LOG_TAG = "AudioRecorder";
@@ -143,9 +145,9 @@ public class AudioRecorder extends Activity {
             public void onClick(View v) {
                 onRecord(mStartRecording);
                 if (mStartRecording) {
-                    setText("Заустави снимање");
+                    setText(getString(R.string.stop_recording));
                 } else {
-                    setText("Снимај");
+                    setText(getString(R.string.record));
                 }
                 mStartRecording = !mStartRecording;
             }
@@ -153,7 +155,7 @@ public class AudioRecorder extends Activity {
 
         public RecordButton(Context ctx) {
             super(ctx);
-            setText("Снимај");
+            setText(getString(R.string.record));
             setOnClickListener(clicker);
         }
     }
@@ -165,9 +167,9 @@ public class AudioRecorder extends Activity {
             public void onClick(View v) {
                 onPlay(mStartPlaying);
                 if (mStartPlaying) {
-                    setText("Заустави звук");
+                    setText(getString(R.string.stop_recording));
                 } else {
-                    setText("Репродукуј звук");
+                    setText(getString(R.string.play_sound));
                 }
                 mStartPlaying = !mStartPlaying;
             }
@@ -175,7 +177,7 @@ public class AudioRecorder extends Activity {
 
         public PlayButton(Context ctx) {
             super(ctx);
-            setText("Репродукуј звук");
+            setText(getString(R.string.play_sound));
             setOnClickListener(clicker);
         }
     }

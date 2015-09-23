@@ -29,7 +29,7 @@
             android:layout_height="fill_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/adminButton"
+            android:layout_toLeftOf="@+id/adminButton"
             android:layout_toRightOf="@id/profilePicture"
             android:clickable="true"
             android:orientation="vertical"></LinearLayout>

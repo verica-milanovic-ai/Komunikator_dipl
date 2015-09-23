@@ -37,6 +37,22 @@
     <string name="final_text">крајња реченица</string>
     <string name="cant_be_saved">Нисте поставили слику или текст за новокреирану опцију!</string>
     <string name="final_text_will_show">Цела реченица ће бити приказана на екрану</string>
+    <string name="choose_image">Изабери фотографију</string>
+    <string name="pass">pass</string>
+    <string name="ret_val">retVal</string>
+    <string name="new_pass_txt">newPass</string>
+    <string name="stop_recording">Заустави снимање</string>
+    <string name="record">Снимај</string>
+    <string name="play_sound">Репродукуј звук</string>
+    <string name="set_image">постави слику</string>
+    <string name="set_text">постави текст</string>
+    <string name="set_sound">постави звук</string>
+    <string name="take_photo">Фотографиши</string>
+    <string name="add_photo">Додај фотографију</string>
+    <string name="choose_from_gallery">Изабери из галерије</string>
+    <string name="record_audio">Сними звук</string>
+    <string name="choose_existing">Изабери постојећи</string>
+    <string name="add_sound">Додај звук</string>
 
 
 </resources>
