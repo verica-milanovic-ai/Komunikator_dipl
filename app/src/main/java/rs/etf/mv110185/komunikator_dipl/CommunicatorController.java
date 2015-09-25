@@ -63,24 +63,42 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     private AppCompatActivity mainActivityContext;
     private MediaPlayer mPlayer;
 
+    private DBHelper helper = null;
+
     public CommunicatorController(AppCompatActivity context) {
         mainActivityContext = context;
         newOption = new ArrayList<>();
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                DBHelper helper = new DBHelper(mainActivityContext);
-                FlagModel flag = helper.getFlag("password");
-                password = flag == null ? null : flag.getValue();
-                if (password == null) {
-                    setPasswordForCommunicator();
+        if (helper == null)
+            helper = new DBHelper(mainActivityContext);
+
+        try {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    if (helper == null)
+                        helper = new DBHelper(mainActivityContext);
+                 /*   FlagModel flag = helper.getFlag("password");
+                    password = flag == null ? null : flag.getValue();
+                    if (password == null) {
+                        setPasswordForCommunicator();
+                    }
+                    */
+                    return null;
                 }
-                return null;
-            }
-        }.execute();
+            }.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
         addFirstOptions();
         setListeners();
+    }
+
+    public DBHelper getHelper() {
+        if (helper == null) helper = new DBHelper(mainActivityContext);
+        return helper;
     }
 
     private void setListeners() {
@@ -153,8 +171,8 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 options.inSampleSize = scale;
                 options.inJustDecodeBounds = false;
                 pict = BitmapFactory.decodeFile(selectedImagePath, options);
-
-                DBHelper helper = new DBHelper(mainActivityContext);
+                if (helper == null)
+                    helper = new DBHelper(mainActivityContext);
                 helper.updateFlag(new FlagModel("profile_picture", selectedImagePath));
                 return pict;
             }
@@ -180,8 +198,11 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
         // TODO: DON'T KNOW IF THIS IS POSSIBLE!
         if (option_gv.getAdapter() == null) {
-            DBHelper helper = new DBHelper(mainActivityContext);
+            if (helper == null)
+                helper = new DBHelper(mainActivityContext);
             Cursor cursor = helper.getAllOptions_cursor(null);
+            if (!cursor.moveToFirst())
+                return;
             String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
             int[] viewIdList = {R.id.imageButton, R.id.textView};
             SimpleCursorAdapter la = new SimpleCursorAdapter(mainActivityContext,
@@ -281,7 +302,8 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                DBHelper helper = new DBHelper(mainActivityContext);
+                if (helper == null)
+                    helper = new DBHelper(mainActivityContext);
                 helper.addFlag(new FlagModel("password", newPass));
                 password = newPass;
                 return null;
@@ -415,7 +437,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                             ll.addView(iv);
                         }
 
-                        DBHelper helper = new DBHelper(mainActivityContext);
+                        if (helper == null) helper = new DBHelper(mainActivityContext);
                         fillOptions(helper.getAllOptions(currentOption));
                         Cursor cursor = helper.getAllOptions_cursor(currentOption);
                         String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
@@ -458,7 +480,8 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                                                         builder.setItems(items, new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick(DialogInterface dialog, int which) {
-                                                                DBHelper helper = new DBHelper(mainActivityContext);
+                                                                if (helper == null)
+                                                                    helper = new DBHelper(mainActivityContext);
                                                                 OptionController c = new OptionController(helper.getOption((int) ib.getTag()), mainActivityContext);
                                                                 if (items[which].equals(mainActivityContext.getString(R.string.set_image))) {
                                                                     c.selectImage(mainActivityContext);
@@ -490,7 +513,8 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                                         view.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                DBHelper helper = new DBHelper(mainActivityContext);
+                                                if (helper == null)
+                                                    helper = new DBHelper(mainActivityContext);
                                                 OptionModel mod = new OptionModel();
                                                 mod.setId((int) view.getTag());
                                                 helper.deleteOption(mod);
@@ -566,7 +590,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                DBHelper helper = new DBHelper(mainActivityContext);
+                if (helper == null) helper = new DBHelper(mainActivityContext);
                 for (OptionController opt : newOption) {
                     helper.addOption(opt.getModel());
                 }
