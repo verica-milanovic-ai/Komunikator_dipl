@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="rs.etf.mv110185.komunikator_dipl.admin.NewOption">
+    <item
+        android:id="@+id/action_stats"
+        android:title="@string/stats" />
+    <item
+        android:id="@+id/action_change_pass"
+        android:title="@string/change_pass" />
+    <item
+        android:id="@+id/action_exit_admin"
+        android:title="@string/exit_admin_mode" />
+</menu>

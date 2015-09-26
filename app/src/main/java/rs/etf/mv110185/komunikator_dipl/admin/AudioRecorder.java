@@ -15,25 +15,26 @@ package rs.etf.mv110185.komunikator_dipl.admin;
  */
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import java.io.IOException;
 
+import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
 import rs.etf.mv110185.komunikator_dipl.R;
+import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 
 public class AudioRecorder extends Activity {
     private static final String LOG_TAG = "AudioRecorder";
     private String mFileName = null;
+    private int id;
 
     private RecordButton mRecordButton = null;
     private MediaRecorder mRecorder = null;
@@ -42,6 +43,7 @@ public class AudioRecorder extends Activity {
     private MediaPlayer mPlayer = null;
 
     private String optionName = "";
+    private OptionModel model;
 
     private void onRecord(boolean start) {
         if (start) {
@@ -102,26 +104,38 @@ public class AudioRecorder extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        // setContentView(R.layout.activity_recorder);
+        setContentView(R.layout.activity_recorder);
 
-        optionName = icicle.getString("option_name");
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        optionName = getIntent().getStringExtra("option_name");
+        String id_str = optionName.substring(optionName.indexOf('_') + 1);
+        id = Integer.parseInt(id_str);
+        model = CommunicatorController.helper.getOption(id);
+        mFileName = getFilesDir().getAbsolutePath();
         mFileName += "/" + optionName + ".3gp";
 
         LinearLayout ll = new LinearLayout(this);
-        mRecordButton = new RecordButton(this);
-        ll.addView(mRecordButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        mPlayButton = new PlayButton(this);
-        ll.addView(mPlayButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        setContentView(ll);
+        mRecordButton = new RecordButton(((Button) findViewById(R.id.record_btn)));
+        mPlayButton = new PlayButton((Button) findViewById(R.id.play_btn));
+        Button ok = (Button) findViewById(R.id.sound_save);
+        Button cancel = (Button) findViewById(R.id.sound_cancel);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = getIntent().putExtra("voice_src", mFileName);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("model", model);
+                intent.putExtra("modelBundle", bundle);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED, null);
+                finish();
+            }
+        });
     }
 
     @Override
@@ -138,47 +152,49 @@ public class AudioRecorder extends Activity {
         }
     }
 
-    class RecordButton extends Button {
+    class RecordButton {
         boolean mStartRecording = true;
+        Button btn;
 
-        OnClickListener clicker = new OnClickListener() {
+        View.OnClickListener clicker = new View.OnClickListener() {
             public void onClick(View v) {
                 onRecord(mStartRecording);
                 if (mStartRecording) {
-                    setText(getString(R.string.stop_recording));
+                    btn.setText(getString(R.string.stop_recording));
                 } else {
-                    setText(getString(R.string.record));
+                    btn.setText(getString(R.string.record));
                 }
                 mStartRecording = !mStartRecording;
             }
         };
 
-        public RecordButton(Context ctx) {
-            super(ctx);
-            setText(getString(R.string.record));
-            setOnClickListener(clicker);
+        public RecordButton(Button bbtn) {
+            btn = bbtn;
+            btn.setText(getString(R.string.record));
+            btn.setOnClickListener(clicker);
         }
     }
 
-    class PlayButton extends Button {
+    class PlayButton {
         boolean mStartPlaying = true;
+        Button btn;
 
-        OnClickListener clicker = new OnClickListener() {
+        View.OnClickListener clicker = new View.OnClickListener() {
             public void onClick(View v) {
                 onPlay(mStartPlaying);
                 if (mStartPlaying) {
-                    setText(getString(R.string.stop_recording));
+                    btn.setText(getString(R.string.stop_recording));
                 } else {
-                    setText(getString(R.string.play_sound));
+                    btn.setText(getString(R.string.play_sound));
                 }
                 mStartPlaying = !mStartPlaying;
             }
         };
 
-        public PlayButton(Context ctx) {
-            super(ctx);
-            setText(getString(R.string.play_sound));
-            setOnClickListener(clicker);
+        public PlayButton(Button bbtn) {
+            btn = bbtn;
+            btn.setText(getString(R.string.play_sound));
+            btn.setOnClickListener(clicker);
         }
     }
 }

@@ -33,6 +33,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rs.etf.mv110185.komunikator_dipl.MainActivity" />
         </activity>
+        <activity
+            android:name=".admin.NewOption"
+            android:label="@string/title_activity_new_option"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="landscape">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rs.etf.mv110185.komunikator_dipl.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

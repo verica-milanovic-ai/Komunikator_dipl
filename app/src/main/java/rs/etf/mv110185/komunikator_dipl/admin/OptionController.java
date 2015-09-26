@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -72,11 +71,13 @@ public class OptionController {
 
     public void askForOptionName() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog dialog = builder.create();
         // Get the layout inflater
         LayoutInflater inflater = context.getLayoutInflater();
-        final EditText et = (EditText) context.findViewById(R.id.option_name);
-        CheckBox cb = (CheckBox) context.findViewById(R.id.is_final_option);
-        final EditText final_text = (EditText) context.findViewById(R.id.option_final_text);
+        View v = inflater.inflate(R.layout.option_name_dialog, null);
+        final EditText et = (EditText) v.findViewById(R.id.option_name);
+        CheckBox cb = (CheckBox) v.findViewById(R.id.is_final_option);
+        final EditText final_text = (EditText) v.findViewById(R.id.option_final_text);
 
         cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -155,7 +156,7 @@ public class OptionController {
         Bitmap pict = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         pict.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-        File destination = new File(Environment.getExternalStorageDirectory(),
+        File destination = new File(context.getFilesDir(),
                 System.currentTimeMillis() + ".jpg");
         FileOutputStream fo;
         try {
@@ -191,7 +192,7 @@ public class OptionController {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(selectedImagePath, options);
         // TODO : steluj da bude lepo prikazano :D !!!
-        final int REQUIRED_SIZE = 200;
+        final int REQUIRED_SIZE = 70;
         int scale = 1;
         while (options.outWidth / scale / 2 >= REQUIRED_SIZE
                 && options.outHeight / scale / 2 >= REQUIRED_SIZE)

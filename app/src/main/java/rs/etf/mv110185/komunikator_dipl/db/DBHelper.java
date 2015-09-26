@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
+
 /**
  * Created by Verica Milanovic  on 8/2/2015.
  */
@@ -60,6 +62,19 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public static OptionModel fillOption(Cursor cursor) {
+        OptionModel option = new OptionModel();
+        option.setId(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption._ID)));
+        option.setImage_src(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC)));
+        option.setVoice_src(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_VOICE_SRC)));
+        option.setIs_sub_option(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IS_SUB_OPTION)));
+        option.setIs_final(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IS_FINAL)));
+        option.setParent(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_PARENT)));
+        option.setFinal_text(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_FINAL_TEXT)));
+        option.setText(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_TEXT)));
+        return option;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -72,7 +87,6 @@ public class DBHelper extends SQLiteOpenHelper {
         fillDB(db);
         //new PopulateDBTask().execute(db);
     }
-
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -87,7 +101,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
-
 
     /**
      * *******************************************************************************************
@@ -178,7 +191,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return ret;
     }
 
-
     public void updateFlag(FlagModel flag) {
 
         // 1. get reference to writable DB
@@ -215,7 +227,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-
     /**
      * *******************************************************************************************
      * **********************************   OPTION  **********************************************
@@ -243,6 +254,9 @@ public class DBHelper extends SQLiteOpenHelper {
         // db.close();
     }
 
+
+    // C R U D operations => (create "add", read "get", update, delete) option
+
     public void addOption(OptionModel option) {
         // 1. get database
         SQLiteDatabase db = this.getWritableDatabase();
@@ -266,9 +280,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-
-    // C R U D operations => (create "add", read "get", update, delete) option
-
     public int getLastOptionID(SQLiteDatabase db) {
         // 1. get reference to readable DB
         //SQLiteDatabase db = this.getReadableDatabase();
@@ -287,7 +298,6 @@ public class DBHelper extends SQLiteOpenHelper {
         // 5. return option
         return max_id;
     }
-
 
     public OptionModel getOption(String text, SQLiteDatabase db) {
         // 1. get reference to readable DB
@@ -315,7 +325,6 @@ public class DBHelper extends SQLiteOpenHelper {
         // 5. return option
         return option;
     }
-
 
     public OptionModel getOption(int id) {
         // 1. get reference to readable DB
@@ -420,19 +429,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return opts;
     }
 
-    private OptionModel fillOption(Cursor cursor) {
-        OptionModel option = new OptionModel();
-        option.setId(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption._ID)));
-        option.setImage_src(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IMAGE_SRC)));
-        option.setVoice_src(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_VOICE_SRC)));
-        option.setIs_sub_option(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IS_SUB_OPTION)));
-        option.setIs_final(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_IS_FINAL)));
-        option.setParent(cursor.getInt(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_PARENT)));
-        option.setFinal_text(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_FINAL_TEXT)));
-        option.setText(cursor.getString(cursor.getColumnIndex(DBContract.CommunicatorOption.COLUMN_NAME_TEXT)));
-        return option;
-    }
-
     // Updating single option
     public int updateOption(OptionModel option, SQLiteDatabase db) {
 
@@ -503,11 +499,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private void fillDB(SQLiteDatabase db) {
         //File f = new File(context.getFilesDir(), FILE_NAME);
-        String[] queries = {"INSERT INTO flag (name, value) VALUES ('password', NULL);",
+        String[] queries = {"INSERT INTO flag (name, value) VALUES ('password', '123');",
                 "INSERT INTO flag (name, value) VALUES ('profile_picture', NULL);"};
         for (String line : queries)
             db.execSQL(line);
 
+        CommunicatorController.password = "123";
 
         fillFromAssets(db);
         logOptionTable(db);
@@ -545,7 +542,7 @@ public class DBHelper extends SQLiteOpenHelper {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            manager.close();
+            // manager.close();
         }
 
 

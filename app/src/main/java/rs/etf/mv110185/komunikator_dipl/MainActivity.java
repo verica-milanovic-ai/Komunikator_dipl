@@ -16,16 +16,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO: restore activity if it's needed
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        if (savedInstanceState == null) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
 
-        controller = new CommunicatorController(this);
+            controller = CommunicatorController.getCommunicatorController(this);
+            CommunicatorController.fetchPassword();
+        } else {
+            controller = (CommunicatorController) savedInstanceState.getSerializable("controller");
+        }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("controller", controller);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        controller.resume();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        CommunicatorController.setMenu(menu);
         return true;
     }
 
@@ -41,20 +60,21 @@ public class MainActivity extends AppCompatActivity {
                     controller.showStats();
                     return true;
                 case R.id.action_change_pass:
-                    controller.changePass(getFragmentManager());
+                    CommunicatorController.changePass(getFragmentManager());
                     return true;
-                case R.id.action_save_changes:
+                /*case R.id.action_save_changes:
                     controller.saveChanges();
                     return true;
+                */
                 case R.id.action_exit_admin:
-                    controller.exitAdminMode();
+                    CommunicatorController.exitAdminMode();
                     return true;
                 default:
                     //somebody else must process this action
                     return super.onContextItemSelected(item);
             }
         } else {
-            controller.askForPass();
+            CommunicatorController.askForPass();
             //I've finished with processing this click action
             return true;
         }
@@ -64,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            controller.onActivityOKResult(requestCode, data);
+            CommunicatorController.onActivityOKResult(requestCode, data);
         }
 
     }
