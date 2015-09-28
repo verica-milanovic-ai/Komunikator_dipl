@@ -30,6 +30,7 @@
         android:layout_marginTop="10dp"
         android:ems="10"
         android:hint="@string/new_option_name"
+        android:imeOptions="actionDone"
         android:inputType="textPersonName"
         android:nextFocusDown="@+id/new_option_ch_image" />
 
@@ -55,6 +56,7 @@
         android:ems="10"
         android:enabled="false"
         android:hint="@string/new_option_final_text"
+        android:imeOptions="actionDone"
         android:inputType="textPersonName" />
 
     <Button

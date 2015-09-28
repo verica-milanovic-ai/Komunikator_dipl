@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -61,10 +62,13 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public static final int REQUEST_CAMERA_PPHOTO = 7;
     public static final int SELECT_FILE_PPHOTO = 8;
 
+    public static String path_gallery;
     public static int IS_ADMIN = 0;
     public static AppCompatActivity mainActivityContext;
     public static DBHelper helper = null;
     public static String password;
+    public static AlertDialog set_password_dialog;
+    public static AlertDialog ask_password_dialog;
     private static List<OptionModel> user_options;
     private static List<OptionModel> userPathList;
     private static OptionModel currentOption = null;
@@ -79,6 +83,11 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         if (helper == null)
             helper = new DBHelper(mainActivityContext);
         IS_ADMIN = 0;
+        path_gallery = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "Komunikator_slike";
+
+        // First Create Directory
+        File outputFile = new File(path_gallery);
+        outputFile.mkdirs();
 
     }
 
@@ -176,8 +185,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(selectedImagePath, options);
-        // TODO : steluj da bude lepo prikazano :D !!!
-        final int REQUIRED_SIZE = 70;
+        final int REQUIRED_SIZE = 100;
         int scale = 1;
         while (options.outWidth / scale / 2 >= REQUIRED_SIZE
                 && options.outHeight / scale / 2 >= REQUIRED_SIZE)
@@ -185,10 +193,21 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         options.inSampleSize = scale;
         options.inJustDecodeBounds = false;
         pict = BitmapFactory.decodeFile(selectedImagePath, options);
+
+        // Now Create File
+        File outputFile = new File(path_gallery, "profilna_fotografija.jpg");
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(outputFile);
+            pict.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         if (helper == null)
             helper = new DBHelper(mainActivityContext);
-        if (helper.updateFlag(new FlagModel("profile_picture", selectedImagePath)) < 1)
-            helper.addFlag(new FlagModel("profile_picture", selectedImagePath));
+        if (helper.updateFlag(new FlagModel("profile_picture", outputFile.getAbsolutePath())) < 1)
+            helper.addFlag(new FlagModel("profile_picture", outputFile.getAbsolutePath()));
 
 
         profP.setImageBitmap(pict);
@@ -202,7 +221,6 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         currentOption = null;
 
         GridView option_gv = (GridView) mainActivityContext.findViewById(R.id.main_gridView);
-        // TODO: DON'T KNOW IF THIS IS POSSIBLE!
         if (option_gv.getAdapter() == null) {
             if (helper == null)
                 helper = new DBHelper(mainActivityContext);
@@ -222,7 +240,6 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
     private static void setPasswordForCommunicator() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
-        final AlertDialog dialog = builder.create();
         // Get the layout inflater
         LayoutInflater inflater = mainActivityContext.getLayoutInflater();
         View v = inflater.inflate(R.layout.create_pass_dialog, null);
@@ -230,20 +247,25 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
         final EditText pass = (EditText) v.findViewById(R.id.etxtPassword);
         final EditText conf_pass = (EditText) v.findViewById(R.id.etxtPassword_conf);
+        Button ok = (Button) v.findViewById(R.id.ok_btn);
+        //Button cancel = (Button) v.findViewById(R.id.cancel_btn);
+        builder.setView(v);
 
-        // Make dialog box visible.
-        builder.setView(v).setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+        set_password_dialog = builder.create();
+        set_password_dialog.setCanceledOnTouchOutside(false);
+
+        ok.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View view) {
                 String cpass = conf_pass.getText().toString();
                 String ppass = pass.getText().toString();
                 if (cpass.equals(ppass)) {
-                    Toast.makeText(mainActivityContext,
-                            mainActivityContext.getString(R.string.pass_saved), Toast.LENGTH_LONG).show();
                     password = pass.getText().toString();
                     String npass = pass.getText().toString();
                     CommunicatorController.saveNewPass(npass);
-                    dialog.dismiss();
+                    Toast.makeText(mainActivityContext,
+                            mainActivityContext.getString(R.string.pass_saved), Toast.LENGTH_LONG).show();
+                    set_password_dialog.dismiss();
                 } else {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.doesnt_match_conf_new), Toast.LENGTH_LONG).show();
@@ -252,13 +274,16 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 }
 
             }
-        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        });
+
+       /* cancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+            public void onClick(View view) {
+                set_password_dialog.cancel();
             }
         });
-        builder.show();
+*/
+        set_password_dialog.show();
     }
 
     public static void changePass(FragmentManager fragmentManager) {
@@ -300,23 +325,26 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public static void askForPass() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
-        final AlertDialog dialog = builder.create();
         // Get the layout inflater
         LayoutInflater inflater = mainActivityContext.getLayoutInflater();
         View v = inflater.inflate(R.layout.login_dialog, null);
-
+        Button ok = (Button) v.findViewById(R.id.ok_btn);
+        Button cancel = (Button) v.findViewById(R.id.cancel_btn);
         // Init button of login GUI
         final EditText pass = (EditText) v.findViewById(R.id.etxtPassword);
+        builder.setView(v);
 
-        builder.setView(v).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        ask_password_dialog = builder.create();
+
+        ok.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View view) {
                 String p = pass.getText().toString();
                 if (password == null || password.equals(p)) {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.welcome_to_admin), Toast.LENGTH_LONG).show();
                     CommunicatorController.changeToAdminView();
-                    dialog.dismiss();
+                    ask_password_dialog.dismiss();
                 } else {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.wrong_pass_admin), Toast.LENGTH_LONG).show();
@@ -324,15 +352,16 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                     pass.selectAll();
                 }
             }
-        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View view) {
                 IS_ADMIN = 0;
-                dialog.cancel();
+                ask_password_dialog.cancel();
             }
         });
         // Make dialog box visible.
-        builder.show();
+        ask_password_dialog.show();
     }
 
     private static void changeToUserView() {
@@ -422,14 +451,14 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                             for (OptionModel opt : userPathList) {
                                 if (opt != null) {
                                     File image = new File(opt.getImage_src());
-                                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                                    bitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, true);
+                                    // BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                                    // Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+                                    // bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, true);
                                     ImageView iv = new ImageView(mainActivityContext);
-                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(50, 50);
+                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(80, 80);
                                     params.setMargins(0, 5, 5, 5);
                                     iv.setLayoutParams(params);
-                                    iv.setImageBitmap(bitmap);
+                                    iv.setImageDrawable(Drawable.createFromPath(image.getAbsolutePath()));
                                     iv.setOnClickListener(arg0[0]);
                                     //TO RECOGNIZE ImageView IN LISTENER :D
                                     iv.setTag(opt);
@@ -508,7 +537,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public static void onActivityOKResult(int requestCode, Intent data) {
         Bundle bundle;
         OptionModel mod;
-        if (requestCode != SELECT_PROFILE_IMAGE && requestCode != REQUEST_NEW_OPTION && requestCode != REQUEST_CAMERA_PPHOTO) {
+        if (requestCode != SELECT_FILE_PPHOTO && requestCode != REQUEST_NEW_OPTION && requestCode != REQUEST_CAMERA_PPHOTO) {
             bundle = data.getBundleExtra("modelBundle");
             mod = (OptionModel) bundle.getSerializable("model");
             OptionController tmp = new OptionController(mod, mainActivityContext);
@@ -556,7 +585,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         Bitmap pict = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         pict.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-        File destination = new File(mainActivityContext.getFilesDir(),
+        File destination = new File(Environment.getExternalStorageDirectory(),
                 System.currentTimeMillis() + "_profile_pict.jpg");
         FileOutputStream fo;
         try {

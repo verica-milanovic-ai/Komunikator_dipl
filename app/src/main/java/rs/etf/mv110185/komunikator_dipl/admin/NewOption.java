@@ -3,13 +3,16 @@ package rs.etf.mv110185.komunikator_dipl.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
@@ -38,6 +41,18 @@ public class NewOption extends AppCompatActivity {
         //Button selVoice = (Button) findViewById(R.id.new_option_ch_voice);
         Button ok = (Button) findViewById(R.id.new_option_save);
         Button cancel = (Button) findViewById(R.id.new_option_cancel);
+
+        name.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    //Clear focus here from edittext
+                    name.clearFocus();
+                }
+                return false;
+            }
+        });
+
 
         selImage.setOnClickListener(new View.OnClickListener() {
             @Override

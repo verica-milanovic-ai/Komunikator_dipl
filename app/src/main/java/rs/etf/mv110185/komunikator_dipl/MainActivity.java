@@ -63,10 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.action_change_pass:
                     CommunicatorController.changePass(getFragmentManager());
                     return true;
-                /*case R.id.action_save_changes:
-                    controller.saveChanges();
-                    return true;
-                */
                 case R.id.action_exit_admin:
                     CommunicatorController.exitAdminMode();
                     return true;

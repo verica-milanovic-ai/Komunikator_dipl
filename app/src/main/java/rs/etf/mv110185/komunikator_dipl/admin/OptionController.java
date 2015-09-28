@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -160,7 +161,7 @@ public class OptionController {
         Bitmap pict = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         pict.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-        File destination = new File(context.getFilesDir(),
+        File destination = new File(Environment.getExternalStorageDirectory(),
                 System.currentTimeMillis() + ".jpg");
         FileOutputStream fo;
         try {
@@ -195,8 +196,7 @@ public class OptionController {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(selectedImagePath, options);
-        // TODO : steluj da bude lepo prikazano :D !!!
-        final int REQUIRED_SIZE = 70;
+        final int REQUIRED_SIZE = 100;
         int scale = 1;
         while (options.outWidth / scale / 2 >= REQUIRED_SIZE
                 && options.outHeight / scale / 2 >= REQUIRED_SIZE)
@@ -204,13 +204,23 @@ public class OptionController {
         options.inSampleSize = scale;
         options.inJustDecodeBounds = false;
         pict = BitmapFactory.decodeFile(selectedImagePath, options);
-        model.setImage_src(selectedImagePath);
+        // Now Create File
+        File outputFile = new File(CommunicatorController.path_gallery, System.currentTimeMillis() + ".jpg");
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(outputFile);
+            pict.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        model.setImage_src(outputFile.getAbsolutePath());
         //view.setImage(pict);
 
     }
 
     public void selectVoice(final AppCompatActivity mainActivity) {
-        final CharSequence[] items = {context.getString(R.string.record_audio), context.getString(R.string.choose_existing), context.getString(R.string.cancel)
+        final CharSequence[] items = {context.getString(R.string.record_audio), context.getString(R.string.cancel)
         };
 
 

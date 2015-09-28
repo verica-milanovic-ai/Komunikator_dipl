@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Комуникатор</string>
+    <string name="app_name">Komunikator</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Administratorski rezim rada</string>
@@ -8,51 +8,51 @@
 
     <string name="file">populateDB.</string>
 
-    <string name="stats">Статистика</string>
-    <string name="exit_admin_mode">Изађи из администраторског режима рада</string>
-    <string name="save">Запамти</string>
-    <string name="change_pass">Промени лозинку</string>
-    <string name="record_audio_title">Снимање звука - Комуникатор</string>
-    <string name="title_activity_statistics">Статистика - Комуникатор</string>
-    <string name="old_pass">унесите тренутну лозинку</string>
-    <string name="new_pass">унесите нову лозинку</string>
-    <string name="pass_confirm">поновите нову лозинку</string>
-    <string name="change_pass_dialog_title">Промена лозинке</string>
-    <string name="cancel">Поништи</string>
+    <string name="stats">Statistika</string>
+    <string name="exit_admin_mode">Izadji iz administratorskog rezima rada</string>
+    <string name="save">Zapamti</string>
+    <string name="change_pass">Promeni lozinku</string>
+    <string name="record_audio_title">Snimanje zvuka - Komunikator</string>
+    <string name="title_activity_statistics">Statistika - Komunikator</string>
+    <string name="old_pass">trenutna lozinka</string>
+    <string name="new_pass">nova lozinka</string>
+    <string name="pass_confirm">nova lozinka</string>
+    <string name="change_pass_dialog_title">Promena lozinke</string>
+    <string name="cancel">Ponisti</string>
 
 
-    <string name="doesnt_match_conf_new">Нова лозинка се не поклапа са поновљеним уносом!</string>
-    <string name="wrong_pass">Погрешна лозинка!</string>
-    <string name="login_admin">Администраторски режим рада</string>
-    <string name="password_admin_login">лозинка</string>
-    <string name="ok">ОК</string>
-    <string name="welcome_to_admin">Добродошли у администраторски режим рада</string>
-    <string name="wrong_pass_admin">Погрешна лозинка!</string>
-    <string name="pass_saved">Лозинка креирана!</string>
-    <string name="add_new_option">Додај нову опцију</string>
+    <string name="doesnt_match_conf_new">Nova lozinka se ne poklapa sa ponovljenim unosom!</string>
+    <string name="wrong_pass">Pogresna lozinka!</string>
+    <string name="login_admin">Administratorski rezim rada</string>
+    <string name="password_admin_login">lozinka</string>
+    <string name="ok">OK</string>
+    <string name="welcome_to_admin">Dobrodosli u administratorski rezim rada</string>
+    <string name="wrong_pass_admin">Pogresna lozinka!</string>
+    <string name="pass_saved">Lozinka kreirana!</string>
+    <string name="add_new_option">Dodaj novu opciju</string>
     <string name="new_option_name">Naziv nove opcije</string>
-    <string name="option_name">име опције</string>
-    <string name="save_changes">Запамти измене</string>
-    <string name="final_option">крајња опција</string>
+    <string name="option_name">ime opcije</string>
+    <string name="save_changes">Zapamti izmene</string>
+    <string name="final_option">krajnja opcija</string>
     <string name="final_text">Krajnji tekst</string>
-    <string name="cant_be_saved">Нисте поставили слику или текст за новокреирану опцију!</string>
-    <string name="final_text_will_show">Цела реченица ће бити приказана на екрану</string>
-    <string name="choose_image">Изабери фотографију</string>
+    <string name="cant_be_saved">Niste postavili sliku ili tekst za novokreiranu opciju!</string>
+    <string name="final_text_will_show">Cela recenica ce biti prikazana na ekranu</string>
+    <string name="choose_image">Izaberi fotografiju</string>
     <string name="pass">pass</string>
     <string name="ret_val">retVal</string>
     <string name="new_pass_txt">newPass</string>
-    <string name="stop_recording">Заустави снимање</string>
-    <string name="record">Снимај</string>
-    <string name="play_sound">Репродукуј звук</string>
-    <string name="set_image">постави слику</string>
-    <string name="set_text">постави текст</string>
-    <string name="set_sound">постави звук</string>
-    <string name="take_photo">Фотографиши</string>
-    <string name="add_photo">Додај фотографију</string>
-    <string name="choose_from_gallery">Изабери из галерије</string>
-    <string name="record_audio">Сними звук</string>
-    <string name="choose_existing">Изабери постојећи</string>
-    <string name="add_sound">Додај звук</string>
+    <string name="stop_recording">Zaustavi snimanje</string>
+    <string name="record">Snimaj</string>
+    <string name="play_sound">Reprodukuj zvuk</string>
+    <string name="set_image">postavi sliku</string>
+    <string name="set_text">postavi tekst</string>
+    <string name="set_sound">postavi zvuk</string>
+    <string name="take_photo">Fotografisi</string>
+    <string name="add_photo">Dodaj fotografiju</string>
+    <string name="choose_from_gallery">Izaberi iz galerije</string>
+    <string name="record_audio">Snimi zvuk</string>
+    <string name="choose_existing">Izaberi postojeci</string>
+    <string name="add_sound">Dodaj zvuk</string>
     <string name="title_activity_new_option">NewOption</string>
     <string name="new_option_final_text">krajnji tekst</string>
     <string name="stop_music">Zaustavi zvuk</string>
@@ -61,6 +61,7 @@
     <string name="are_you_sure_to_del_opt">Da li ste sigurni da zelite da izbrisete ovu opciju?</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
+    <string name="create">Kreiraj</string>
 
 
 </resources>
