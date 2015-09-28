@@ -15,9 +15,9 @@ public class UserOnClickListener implements View.OnClickListener {
         ImageView im = (ImageView) v;
         OptionModel model = (OptionModel) im.getTag();
         CommunicatorController.setCurrentOption(model);
-        CommunicatorController.changeOptions();
         if (model.getVoice_src() != null)
             CommunicatorController.startPlaying(model.getVoice_src(), model);
+        CommunicatorController.changeOptions();
 
     }
 }

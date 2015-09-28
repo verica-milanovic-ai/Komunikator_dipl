@@ -55,6 +55,12 @@
     <string name="add_sound">Додај звук</string>
     <string name="title_activity_new_option">NewOption</string>
     <string name="new_option_final_text">krajnji tekst</string>
+    <string name="stop_music">Zaustavi zvuk</string>
+    <string name="delete_option">izbrisi opciju</string>
+    <string name="option_delete">Brisanje opcije</string>
+    <string name="are_you_sure_to_del_opt">Da li ste sigurni da zelite da izbrisete ovu opciju?</string>
+    <string name="yes">Da</string>
+    <string name="no">Ne</string>
 
 
 </resources>

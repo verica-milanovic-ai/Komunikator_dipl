@@ -17,8 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
-
 /**
  * Created by Verica Milanovic  on 8/2/2015.
  */
@@ -128,7 +126,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public FlagModel getFlag(int id) {
-        FlagModel ret = null;
+        FlagModel ret = new FlagModel();
         // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -144,11 +142,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         null); // h. limit
 
         // 3. if we got results get the first one
-        if (cursor != null) {
-            cursor.moveToFirst();
-
-
-            ret = new FlagModel();
+        if (cursor.moveToFirst()) {
 
             // 4. build option object
             ret.setId(Integer.parseInt(cursor.getString(0)));
@@ -156,11 +150,12 @@ public class DBHelper extends SQLiteOpenHelper {
             ret.setValue(cursor.getString(2));
         }
         // 5. return option
+        db.close();
         return ret;
     }
 
     public FlagModel getFlag(String name) {
-        FlagModel ret = null;
+        FlagModel ret = new FlagModel();
         // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -176,22 +171,20 @@ public class DBHelper extends SQLiteOpenHelper {
                         null); // h. limit
 
         // 3. if we got results get the first one
-        if (cursor != null) {
-            cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
 
-
-            ret = new FlagModel();
 
             // 4. build option object
             ret.setId(Integer.parseInt(cursor.getString(0)));
             ret.setName(cursor.getString(1));
             ret.setValue(cursor.getString(2));
         }
+        db.close();
         // 5. return option
         return ret;
     }
 
-    public void updateFlag(FlagModel flag) {
+    public int updateFlag(FlagModel flag) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
@@ -205,11 +198,12 @@ public class DBHelper extends SQLiteOpenHelper {
         // 3. updating row
         int i = db.update(DBContract.CommunicatorFlags.TABLE_NAME, //table
                 values, // column/value
-                DBContract.CommunicatorFlags._ID + " = ?", // selections
-                new String[]{String.valueOf(flag.getId())}); //selection args
+                DBContract.CommunicatorFlags.COLUMN_NAME_NAME + " LIKE ?", // selections
+                new String[]{flag.getName()}); //selection args
 
         // 4. close
         db.close();
+        return i;
     }
 
     // Deleting single option
@@ -349,6 +343,7 @@ public class DBHelper extends SQLiteOpenHelper {
             // 4. build option object
             option = fillOption(cursor);
         }
+        db.close();
         // 5. return option
         return option;
     }
@@ -374,12 +369,41 @@ public class DBHelper extends SQLiteOpenHelper {
                 opts.add(option);
             } while (cursor.moveToNext());
         }
-
+        db.close();
         // return opts
         return opts;
     }
 
     // Get All SubOptions from parent
+    public Cursor getAllOptions_cursor(OptionModel model, SQLiteDatabase db) {
+        // 1. build the query
+        Cursor cursor;
+        //SQLiteDatabase db = this.getWritableDatabase();
+        if (model != null) {
+            cursor = db.query(DBContract.CommunicatorOption.TABLE_NAME, // a. table
+                    DBContract.CommunicatorOption.COLUMNS, // b. column names
+                    " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + String.valueOf(model.getId()) + "'", // c. selections
+                    null, // d. selections args
+                    null, // e. group by
+                    null, // f. having
+                    null, // g. order by
+                    null); // h. limit
+        } else {
+            cursor = db.query(DBContract.CommunicatorOption.TABLE_NAME, // a. table
+                    DBContract.CommunicatorOption.COLUMNS, // b. column names
+                    " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '0'", // c. selections
+                    null, // d. selections args
+                    null, // e. group by
+                    null, // f. having
+                    null, // g. order by
+                    null); // h. limit
+        }
+
+        // 2. get reference to writable DB
+        //db.close();
+        return cursor;
+    }
+
     public Cursor getAllOptions_cursor(OptionModel model) {
         // 1. build the query
         Cursor cursor;
@@ -405,14 +429,14 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         // 2. get reference to writable DB
-
+        //db.close();
         return cursor;
     }
 
     public List<OptionModel> getAllOptions(OptionModel model) {
         List<OptionModel> opts = new LinkedList<>();
-
-        Cursor cursor = getAllOptions_cursor(model);
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = getAllOptions_cursor(model, db);
 
         // 3. go over each row, build option and add it to list
         OptionModel option = null;
@@ -426,6 +450,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         // return opts
+        db.close();
         return opts;
     }
 
@@ -492,20 +517,51 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(DBContract.CommunicatorOption.TABLE_NAME,
                 DBContract.CommunicatorOption._ID + " = ?",
                 new String[]{String.valueOf(option.getId())});
+        Cursor cursor = db.query(DBContract.CommunicatorOption.TABLE_NAME, // a. table
+                DBContract.CommunicatorOption.COLUMNS, // b. column names
+                " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + String.valueOf(option.getId()) + "'", // c. selections
+                null, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
 
+        // delete all children and their children, and their children... :D
+        while (cursor.moveToNext()) {
+            deleteOption(fillOption(cursor), db);
+        }
         // 3. close
         db.close();
     }
 
+    public void deleteOption(OptionModel option, SQLiteDatabase db) {
+
+        // 1. get reference to writable DB
+        // SQLiteDatabase db = this.getWritableDatabase();
+
+        // 2. delete
+        db.delete(DBContract.CommunicatorOption.TABLE_NAME,
+                DBContract.CommunicatorOption._ID + " = ?",
+                new String[]{String.valueOf(option.getId())});
+        Cursor cursor = db.query(DBContract.CommunicatorOption.TABLE_NAME, // a. table
+                DBContract.CommunicatorOption.COLUMNS, // b. column names
+                " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + String.valueOf(option.getId()) + "'", // c. selections
+                null, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+        // delete all children and their children, and their children... :D
+        while (cursor.moveToNext()) {
+            deleteOption(fillOption(cursor), db);
+        }
+        // 3. close
+        // db.close();
+    }
+
+
     private void fillDB(SQLiteDatabase db) {
-        //File f = new File(context.getFilesDir(), FILE_NAME);
-        String[] queries = {"INSERT INTO flag (name, value) VALUES ('password', '123');",
-                "INSERT INTO flag (name, value) VALUES ('profile_picture', NULL);"};
-        for (String line : queries)
-            db.execSQL(line);
-
-        CommunicatorController.password = "123";
-
         fillFromAssets(db);
         logOptionTable(db);
         populated = true;
@@ -614,7 +670,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     OptionModel real = getOption(name, db);
                     tmp.setId(real.getId());
                     tmp.setParent(real.getParent());
-                    tmp.setIs_final(isFinal ? 1 : 0);
+                    tmp.setIs_final(content.length == 1 ? 1 : 0);
                     updateOption(tmp, db);
                 }
 

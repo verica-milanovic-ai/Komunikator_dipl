@@ -1,12 +1,14 @@
 package rs.etf.mv110185.komunikator_dipl;
 
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,7 +29,10 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,6 +58,8 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public static final int SELECT_PROFILE_IMAGE = 4;
     public static final int REQUEST_AUDIO_RECORDER = 3;
     public static final int REQUEST_NEW_OPTION = 6;
+    public static final int REQUEST_CAMERA_PPHOTO = 7;
+    public static final int SELECT_FILE_PPHOTO = 8;
 
     public static int IS_ADMIN = 0;
     public static AppCompatActivity mainActivityContext;
@@ -88,6 +96,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
             addFirstOptions();
             setListeners();
         }
+        fetchPasswordAndPPicture();
         return controller;
     }
 
@@ -121,62 +130,69 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     }
 
     private static void changeProfilePicture() {
-        Intent intent = new Intent(
-                Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
-        mainActivityContext.startActivityForResult(
-                Intent.createChooser(intent, mainActivityContext.getString(R.string.choose_image)),
-                CommunicatorController.SELECT_PROFILE_IMAGE);
+        final CharSequence[] items = {mainActivityContext.getString(R.string.take_photo),
+                mainActivityContext.getString(R.string.choose_from_gallery),
+                mainActivityContext.getString(R.string.cancel)};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
+        builder.setTitle(mainActivityContext.getString(R.string.add_photo));
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals(mainActivityContext.getString(R.string.take_photo))) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    mainActivityContext.startActivityForResult(intent, CommunicatorController.REQUEST_CAMERA_PPHOTO);
+                } else if (items[item].equals(mainActivityContext.getString(R.string.choose_from_gallery))) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    mainActivityContext.startActivityForResult(
+                            Intent.createChooser(intent, mainActivityContext.getString(R.string.choose_image)),
+                            CommunicatorController.SELECT_FILE_PPHOTO);
+                } else if (items[item].equals(mainActivityContext.getString(R.string.cancel))) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
 
-    public static void handleProfileImage(final Intent data) {
+    public static void handleProfileImageFromGallery(final Intent data) {
         ImageView profP = (ImageView) mainActivityContext.findViewById(R.id.profilePicture);
+        Uri selectedImageUri = data.getData();
+        String[] projection = {MediaStore.MediaColumns.DATA};
 
-        AsyncTask<Void, Void, Bitmap> a = new AsyncTask<Void, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(Void... params) {
-                Uri selectedImageUri = data.getData();
-                String[] projection = {MediaStore.MediaColumns.DATA};
+        CursorLoader cursorLoader = new CursorLoader(
+                mainActivityContext,
+                selectedImageUri, projection, null, null, null);
 
-                CursorLoader cursorLoader = new CursorLoader(
-                        mainActivityContext,
-                        selectedImageUri, projection, null, null, null);
+        Cursor cursor = cursorLoader.loadInBackground();
 
-                Cursor cursor = cursorLoader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        String selectedImagePath = cursor.getString(column_index);
+        Bitmap pict;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+        // TODO : steluj da bude lepo prikazano :D !!!
+        final int REQUIRED_SIZE = 70;
+        int scale = 1;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        pict = BitmapFactory.decodeFile(selectedImagePath, options);
+        if (helper == null)
+            helper = new DBHelper(mainActivityContext);
+        if (helper.updateFlag(new FlagModel("profile_picture", selectedImagePath)) < 1)
+            helper.addFlag(new FlagModel("profile_picture", selectedImagePath));
 
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                cursor.moveToFirst();
-                String selectedImagePath = cursor.getString(column_index);
-                Bitmap pict;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(selectedImagePath, options);
-                // TODO : steluj da bude lepo prikazano :D !!!
-                final int REQUIRED_SIZE = 200;
-                int scale = 1;
-                while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-                    scale *= 2;
-                options.inSampleSize = scale;
-                options.inJustDecodeBounds = false;
-                pict = BitmapFactory.decodeFile(selectedImagePath, options);
-                if (helper == null)
-                    helper = new DBHelper(mainActivityContext);
-                helper.updateFlag(new FlagModel("profile_picture", selectedImagePath));
-                return pict;
-            }
-        }.execute();
 
-        Bitmap pict = null;
-        try {
-            pict = a.get();
-            profP.setImageBitmap(pict);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        profP.setImageBitmap(pict);
+
 
     }
 
@@ -194,7 +210,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
             if (!cursor.moveToFirst())
                 return;
             String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
-            int[] viewIdList = {R.id.imageButton, R.id.textView, R.id.del_option};
+            int[] viewIdList = {R.id.imageButton, R.id.textView};
             SimpleCursorAdapter la = new SimpleCursorAdapter(mainActivityContext,
                     R.layout.admin_option_item, cursor, fieldList, viewIdList,
                     0);
@@ -205,74 +221,76 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     }
 
     private static void setPasswordForCommunicator() {
-        // create dialog! :D
-        final Dialog newPass = new Dialog(mainActivityContext);
-        // Set GUI of login screen
-        newPass.setContentView(R.layout.create_pass_dialog);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
+        final AlertDialog dialog = builder.create();
+        // Get the layout inflater
+        LayoutInflater inflater = mainActivityContext.getLayoutInflater();
+        View v = inflater.inflate(R.layout.create_pass_dialog, null);
 
-        // Init button of login GUI
-        final EditText pass = (EditText) newPass.findViewById(R.id.etxtPassword);
-        final EditText conf_pass = (EditText) newPass.findViewById(R.id.etxtPassword_conf);
-        Button btnLogin = (Button) newPass.findViewById(R.id.btnLogin);
-        Button btnCancel = (Button) newPass.findViewById(R.id.btnCancel);
 
-        // Attached listener for login GUI button
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        final EditText pass = (EditText) v.findViewById(R.id.etxtPassword);
+        final EditText conf_pass = (EditText) v.findViewById(R.id.etxtPassword_conf);
+
+        // Make dialog box visible.
+        builder.setView(v).setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (conf_pass.getText().equals(pass.getText().toString())) {
+            public void onClick(DialogInterface dialog, int which) {
+                String cpass = conf_pass.getText().toString();
+                String ppass = pass.getText().toString();
+                if (cpass.equals(ppass)) {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.pass_saved), Toast.LENGTH_LONG).show();
                     password = pass.getText().toString();
-                    CommunicatorController.saveNewPass(pass.getText().toString());
-                    newPass.dismiss();
+                    String npass = pass.getText().toString();
+                    CommunicatorController.saveNewPass(npass);
+                    dialog.dismiss();
                 } else {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.doesnt_match_conf_new), Toast.LENGTH_LONG).show();
                     conf_pass.requestFocus();
                     conf_pass.selectAll();
                 }
+
             }
-        });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                newPass.cancel();
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
             }
         });
-        // Make dialog box visible.
-        newPass.show();
+        builder.show();
     }
 
     public static void changePass(FragmentManager fragmentManager) {
         //build dialog  - ask for current password
         // ask for new password and for conformation
         // save password to database
-        ChangePassDialog passDialog = new ChangePassDialog();
+        ChangePassDialog passDialog = ChangePassDialog.newInstance(password);
         passDialog.show(fragmentManager, "TAG");
-        Intent intent = mainActivityContext.getIntent();
-        int retVal = 0;
-        retVal = intent.getIntExtra("retVal", retVal);
-        String newPass = "";
-        newPass = intent.getStringExtra("newPass");
-        if (retVal == 1) {
-            saveNewPass(newPass);
-            password = newPass;
-        }
+
     }
 
-    private static void saveNewPass(final String newPass) {
+    /* public static void handleNewPass() {
+         Intent intent = mainActivityContext.getIntent();
+         Bundle bund = intent.getBundleExtra("bund");
+         int retVal = 0;
+         retVal = bund.getInt("ret_val");
+         String newPass = "";
+         newPass = bund.getString(String.valueOf(R.string.new_pass_txt));
+         if (retVal == 1) {
+             saveNewPass(newPass);
+             password = newPass;
+         }
+     }
+ */
+    public static void saveNewPass(final String newPass) {
         // SAVE PASS TO DATABASE
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                if (helper == null)
-                    helper = new DBHelper(mainActivityContext);
-                helper.addFlag(new FlagModel("password", newPass));
-                password = newPass;
-                return null;
-            }
-        }.execute();
+        if (helper == null)
+            helper = new DBHelper(mainActivityContext);
+        if (helper.updateFlag(new FlagModel("password", newPass)) < 1)
+            helper.addFlag(new FlagModel("password", newPass));
+        password = newPass;
+
     }
 
     public static void exitAdminMode() {
@@ -280,26 +298,25 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     }
 
     public static void askForPass() {
-        // create dialog! :D
-        final Dialog login = new Dialog(mainActivityContext);
-        // Set GUI of login screen
-        login.setContentView(R.layout.login_dialog);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
+        final AlertDialog dialog = builder.create();
+        // Get the layout inflater
+        LayoutInflater inflater = mainActivityContext.getLayoutInflater();
+        View v = inflater.inflate(R.layout.login_dialog, null);
 
         // Init button of login GUI
-        final EditText pass = (EditText) login.findViewById(R.id.etxtPassword);
-        Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
-        Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+        final EditText pass = (EditText) v.findViewById(R.id.etxtPassword);
 
-        // Attached listener for login GUI button
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        builder.setView(v).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(DialogInterface dialog, int which) {
                 String p = pass.getText().toString();
                 if (password == null || password.equals(p)) {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.welcome_to_admin), Toast.LENGTH_LONG).show();
                     CommunicatorController.changeToAdminView();
-                    login.dismiss();
+                    dialog.dismiss();
                 } else {
                     Toast.makeText(mainActivityContext,
                             mainActivityContext.getString(R.string.wrong_pass_admin), Toast.LENGTH_LONG).show();
@@ -307,17 +324,15 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                     pass.selectAll();
                 }
             }
-        });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(DialogInterface dialog, int which) {
                 IS_ADMIN = 0;
-                login.cancel();
+                dialog.cancel();
             }
         });
-
         // Make dialog box visible.
-        login.show();
+        builder.show();
     }
 
     private static void changeToUserView() {
@@ -373,7 +388,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
             public void onCompletion(MediaPlayer mp) {
                 CommunicatorController.stopPlaying();
                 currentOption = model;
-                CommunicatorController.changeOptions();
+                // CommunicatorController.changeOptions();
             }
         });
         try {
@@ -426,7 +441,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                             CommunicatorController.fillOptions(helper.getAllOptions(currentOption));
                             Cursor cursor = helper.getAllOptions_cursor(currentOption);
                             String[] fieldList = DBContract.CommunicatorOption.COLUMNS;
-                            int[] viewIdList = {R.id.imageButton, R.id.textView, R.id.del_option};
+                            int[] viewIdList = {R.id.imageButton, R.id.textView};
 
                             int isFinal_currOpt = currentOption == null ? 0 : currentOption.getIs_final();
                             if (isFinal_currOpt == 0) {
@@ -444,15 +459,6 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                                     btn.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                           /* newOption.add(new OptionController(new OptionModel(), mainActivityContext));
-                                            int index = newOption.size() - 1;
-                                            newOption.get(index).askForOptionName();
-                                            if (currentOption != null)
-                                                newOption.get(index).getModel().setParent(currentOption.getId());
-                                            else
-                                                newOption.get(index).getModel().setParent(0);
-                                           */
-                                            //TODO: start activity for Result :D
                                             Intent newOption_intent = new Intent(mainActivityContext, NewOption.class);
                                             mainActivityContext.startActivityForResult(newOption_intent, REQUEST_NEW_OPTION);
                                         }
@@ -502,7 +508,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public static void onActivityOKResult(int requestCode, Intent data) {
         Bundle bundle;
         OptionModel mod;
-        if (requestCode != SELECT_PROFILE_IMAGE && requestCode != REQUEST_NEW_OPTION) {
+        if (requestCode != SELECT_PROFILE_IMAGE && requestCode != REQUEST_NEW_OPTION && requestCode != REQUEST_CAMERA_PPHOTO) {
             bundle = data.getBundleExtra("modelBundle");
             mod = (OptionModel) bundle.getSerializable("model");
             OptionController tmp = new OptionController(mod, mainActivityContext);
@@ -534,13 +540,42 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 case REQUEST_NEW_OPTION:
                     handleNewOption(data);
                     break;
-                case SELECT_PROFILE_IMAGE:
-                    handleProfileImage(data);
+                case SELECT_FILE_PPHOTO:
+                    handleProfileImageFromGallery(data);
+                    break;
+                case REQUEST_CAMERA_PPHOTO:
+                    handleProfileImageFromCamera(data);
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    private static void handleProfileImageFromCamera(Intent data) {
+        Bitmap pict = (Bitmap) data.getExtras().get("data");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        pict.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        File destination = new File(mainActivityContext.getFilesDir(),
+                System.currentTimeMillis() + "_profile_pict.jpg");
+        FileOutputStream fo;
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (FileNotFoundException e) {
+            Log.e("ProfilePicture", "createNewFile() failed!");
+        } catch (IOException e) {
+            Log.e("ProfilePicture", "output stream not ok!");
+        }
+        if (helper == null)
+            helper = new DBHelper(mainActivityContext);
+        if (helper.updateFlag(new FlagModel("profile_picture", destination.getAbsolutePath())) < 1)
+            helper.addFlag(new FlagModel("profile_picture", destination.getAbsolutePath()));
+
+        ImageView profP = (ImageView) mainActivityContext.findViewById(R.id.profilePicture);
+        profP.setImageBitmap(pict);
     }
 
     private static void handleNewOption(Intent data) {
@@ -561,8 +596,16 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         }
     }
 
-    public static void fetchPassword() {
+    public static void fetchPasswordAndPPicture() {
         password = helper.getFlag("password").getValue();
+        if (password == null)
+            setPasswordForCommunicator();
+        String ppicture = helper.getFlag("profile_picture").getValue();
+        if (ppicture != null) {
+            ImageView pp = (ImageView) mainActivityContext.findViewById(R.id.profilePicture);
+            pp.setImageDrawable(Drawable.createFromPath(ppicture));
+        }
+
     }
 
     // TODO: IMPLEMENT!!!

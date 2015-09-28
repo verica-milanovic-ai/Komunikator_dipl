@@ -183,7 +183,7 @@ public class AudioRecorder extends Activity {
             public void onClick(View v) {
                 onPlay(mStartPlaying);
                 if (mStartPlaying) {
-                    btn.setText(getString(R.string.stop_recording));
+                    btn.setText(getString(R.string.stop_music));
                 } else {
                     btn.setText(getString(R.string.play_sound));
                 }

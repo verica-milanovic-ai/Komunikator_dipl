@@ -30,7 +30,8 @@
         android:layout_marginTop="10dp"
         android:ems="10"
         android:hint="@string/new_option_name"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:nextFocusDown="@+id/new_option_ch_image" />
 
     <CheckBox
         android:id="@+id/new_option_is_final"
@@ -60,21 +61,11 @@
         android:id="@+id/new_option_ch_image"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/new_option_is_final"
-        android:layout_alignRight="@+id/new_option_is_final"
         android:layout_below="@+id/new_option_final_text"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="@string/add_photo" />
 
-    <Button
-        android:id="@+id/new_option_ch_voice"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/new_option_final_text"
-        android:layout_marginTop="20dp"
-        android:layout_toEndOf="@+id/new_option_ch_image"
-        android:layout_toRightOf="@+id/new_option_ch_image"
-        android:text="@string/add_sound" />
 
     <LinearLayout
         android:layout_width="match_parent"

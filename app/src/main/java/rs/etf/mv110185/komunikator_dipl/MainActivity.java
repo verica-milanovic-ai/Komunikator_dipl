@@ -21,9 +21,10 @@ public class MainActivity extends AppCompatActivity {
             setContentView(R.layout.activity_main);
 
             controller = CommunicatorController.getCommunicatorController(this);
-            CommunicatorController.fetchPassword();
+            // CommunicatorController.fetchPasswordAndPPicture();
         } else {
             controller = (CommunicatorController) savedInstanceState.getSerializable("controller");
+            controller.resume();
         }
 
     }

@@ -35,7 +35,7 @@ public class NewOption extends AppCompatActivity {
         final CheckBox isFinal = (CheckBox) findViewById(R.id.new_option_is_final);
         final EditText finalText = (EditText) findViewById(R.id.new_option_final_text);
         Button selImage = (Button) findViewById(R.id.new_option_ch_image);
-        Button selVoice = (Button) findViewById(R.id.new_option_ch_voice);
+        //Button selVoice = (Button) findViewById(R.id.new_option_ch_voice);
         Button ok = (Button) findViewById(R.id.new_option_save);
         Button cancel = (Button) findViewById(R.id.new_option_cancel);
 
@@ -45,12 +45,13 @@ public class NewOption extends AppCompatActivity {
                 controller.selectImage(instance);
             }
         });
-        selVoice.setOnClickListener(new View.OnClickListener() {
+       /* selVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 controller.selectVoice(instance);
             }
         });
+        */
         isFinal.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -132,12 +133,13 @@ public class NewOption extends AppCompatActivity {
                 case CommunicatorController.REQUEST_CAMERA:
                     controller.handleImageFromCamera(data);
                     break;
-                case CommunicatorController.REQUEST_AUDIO_RECORDER:
+             /*   case CommunicatorController.REQUEST_AUDIO_RECORDER:
                     controller.handleVoiceFromRecorder(data);
                     break;
                 case CommunicatorController.SELECT_VOICE_FILE:
                     controller.handleSelectedVoice(data);
                     break;
+                    */
                 case CommunicatorController.SELECT_FILE:
                     controller.handleImageFromGallery(data);
                     break;

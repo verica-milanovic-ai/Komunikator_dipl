@@ -2,8 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:background="#ffffffff"
     android:orientation="vertical">
 
     <ImageView
@@ -42,7 +40,6 @@
         android:layout_marginTop="16dp"
         android:hint="@string/final_text"
         android:inputType="text"
-        android:password="true"
         android:visibility="gone" />
 
     <EditText
@@ -54,8 +51,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginTop="16dp"
         android:hint="@string/option_name"
-        android:inputType="text"
-        android:password="true" />
+        android:inputType="text" />
 
 
 </LinearLayout>

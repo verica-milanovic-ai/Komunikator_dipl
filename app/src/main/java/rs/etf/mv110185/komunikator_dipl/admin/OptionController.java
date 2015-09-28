@@ -94,16 +94,20 @@ public class OptionController {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.option_name_dialog, null))
+        builder.setView(v)
                 // Add action buttons
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // sign in the user ...
-                        model.setText(et.getText().toString());
+                        String txt = et.getText().toString();
+                        model.setText(txt);
                         if (model.getIs_final() == 1) {
-                            model.setFinal_text(final_text.getText().toString());
+                            String fnl = final_text.getText().toString();
+                            model.setFinal_text(fnl);
                         }
+                        CommunicatorController.helper.updateOption(model);
+                        CommunicatorController.changeOptions();
                         dialog.dismiss();
                     }
                 })
