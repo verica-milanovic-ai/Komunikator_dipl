@@ -19,26 +19,9 @@
         android:background="#ffffca36"
         android:gravity="center"
         android:text="Snimanje zvuka"
-        android:textAppearance="?android:attr/textAppearanceLarge" /><![CDATA[
-
-    EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/new_option_name"
-        android:layout_below="@+id/title_voice_record"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:hint="@string/new_option_name" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
-
-
-
-
-
-    ]]>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -67,7 +50,7 @@
 
     <Button
         android:id="@+id/record_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/play_btn"
         android:layout_alignLeft="@+id/play_btn"
@@ -79,7 +62,7 @@
 
     <Button
         android:id="@+id/play_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/record_btn"
         android:layout_centerHorizontal="true"

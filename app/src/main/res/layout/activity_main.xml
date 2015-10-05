@@ -7,21 +7,26 @@
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="140dp"
         android:background="#ff525252">
 
+        <LinearLayout
+            android:id="@+id/pp_layout"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_margin="10dp"
+            android:background="#ffffff">
 
-        <ImageView
-            android:id="@+id/profilePicture"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_margin="12.5dp"
-            android:clickable="true"
-            android:contentDescription="@string/profilePicture"
-            android:src="@android:drawable/sym_def_app_icon" />
+            <ImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:contentDescription="@string/profilePicture"
+                android:src="@android:drawable/sym_def_app_icon" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/add_new_opt_btn"
@@ -41,7 +46,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
-            android:layout_toRightOf="@id/profilePicture"
+            android:layout_toRightOf="@id/pp_layout"
             android:clickable="true"
             android:gravity="left"
             android:orientation="horizontal"></LinearLayout>
@@ -53,13 +58,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/relativeLayout"
-        android:layout_marginLeft="10dp"
-        android:columnWidth="100dp"
+        android:layout_margin="10dp"
+        android:columnWidth="110dp"
         android:gravity="center"
         android:horizontalSpacing="10dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="0dp" />
+        android:verticalSpacing="10dp" />
 
     <TextView
         android:id="@+id/finalText"

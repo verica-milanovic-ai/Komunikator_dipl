@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+    android:layout_width="200dp"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
@@ -17,7 +17,8 @@
         android:background="#FFFFBB33"
         android:fontFamily="century-gothic"
         android:gravity="center"
-        android:text="@string/login_admin"
+        android:singleLine="false"
+        android:text="Kreiranje lozinke za METAKOMUNIKATOR"
         android:textAllCaps="true"
         android:textColor="#ff783a15"
         android:textSize="15dp"
@@ -28,10 +29,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="16dp"
         android:fontFamily="century-gothic"
+        android:gravity="center"
         android:hint="@string/new_pass"
         android:inputType="textPassword"
         android:password="true" />
@@ -41,11 +43,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="16dp"
         android:fontFamily="century-gothic"
-        android:hint="@string/pass_confirm"
+        android:gravity="center"
+        android:hint="ponovljen unos"
         android:inputType="textPassword"
         android:password="true" />
 

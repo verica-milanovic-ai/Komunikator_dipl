@@ -7,7 +7,6 @@ import android.view.View;
 import rs.etf.mv110185.komunikator_dipl.CommunicatorController;
 import rs.etf.mv110185.komunikator_dipl.R;
 import rs.etf.mv110185.komunikator_dipl.admin.OptionController;
-import rs.etf.mv110185.komunikator_dipl.db.DBHelper;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 /**
@@ -19,13 +18,12 @@ public class AdminOnLongClickListener implements View.OnLongClickListener {
         if (CommunicatorController.IS_ADMIN == 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(CommunicatorController.mainActivityContext);
             final CharSequence[] items = {CommunicatorController.mainActivityContext.getString(R.string.set_image),
-                    CommunicatorController.mainActivityContext.getString(R.string.set_text), CommunicatorController.mainActivityContext.getString(R.string.set_sound), "izbrisi opciju"};
+                    CommunicatorController.mainActivityContext.getString(R.string.set_text), CommunicatorController.mainActivityContext.getString(R.string.set_sound), CommunicatorController.mainActivityContext.getString(R.string.delete_option)};
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (CommunicatorController.helper == null)
-                        CommunicatorController.helper = new DBHelper(CommunicatorController.mainActivityContext);
-                    final OptionController c = new OptionController((OptionModel) v.getTag(), CommunicatorController.mainActivityContext);
+                    final OptionController c = new OptionController((OptionModel) v.getTag(),
+                            CommunicatorController.mainActivityContext);
                     if (items[which].equals(CommunicatorController.mainActivityContext.getString(R.string.set_image))) {
                         c.selectImage(CommunicatorController.mainActivityContext);
                     } else if (items[which].equals(CommunicatorController.mainActivityContext.getString(R.string.set_text)))

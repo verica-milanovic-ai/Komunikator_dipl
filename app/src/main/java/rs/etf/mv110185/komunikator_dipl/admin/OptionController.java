@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -105,7 +104,10 @@ public class OptionController {
                         model.setText(txt);
                         if (model.getIs_final() == 1) {
                             String fnl = final_text.getText().toString();
-                            model.setFinal_text(fnl);
+                            if (!fnl.isEmpty())
+                                model.setFinal_text(fnl);
+                            else
+                                model.setFinal_text(txt);
                         }
                         CommunicatorController.helper.updateOption(model);
                         CommunicatorController.changeOptions();
@@ -133,17 +135,21 @@ public class OptionController {
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals(context.getString(R.string.take_photo))) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Bundle bundle = new Bundle();
+                    /*Bundle bundle = new Bundle();
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
+                    */
+                    CommunicatorController.newOption = model;
                     mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_CAMERA);
                 } else if (items[item].equals(context.getString(R.string.choose_from_gallery))) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    Bundle bundle = new Bundle();
+                    CommunicatorController.newOption = model;
+                    /*Bundle bundle = new Bundle();
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
+                    */
                     intent.setType("image/*");
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, context.getString(R.string.choose_image)),
@@ -232,18 +238,22 @@ public class OptionController {
                 if (items[item].equals(context.getString(R.string.record_audio))) {
                     Intent intent = new Intent(mainActivity, AudioRecorder.class);
                     intent.putExtra("option_name", "option_" + model.getId());
-                    Bundle bundle = new Bundle();
+                   /* Bundle bundle = new Bundle();
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
+                    */
+                    CommunicatorController.newOption = model;
                     mainActivity.startActivityForResult(intent, CommunicatorController.REQUEST_AUDIO_RECORDER);
                 } else if (items[item].equals(context.getString(R.string.choose_existing))) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("audio/*");
-                    Bundle bundle = new Bundle();
+                    /*Bundle bundle = new Bundle();
                     bundle.putSerializable("model", model);
                     intent.putExtra("modelBundle", bundle);
+                    */
+                    CommunicatorController.newOption = model;
                     mainActivity.startActivityForResult(
                             Intent.createChooser(intent, context.getString(R.string.choose_existing)),
                             CommunicatorController.SELECT_VOICE_FILE);

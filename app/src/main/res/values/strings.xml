@@ -2,17 +2,17 @@
     <string name="app_name">Komunikator</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Administratorski rezim rada</string>
+    <string name="action_settings">Metakomunikator</string>
     <string name="menuButton_desc">login as admin</string>
     <string name="profilePicture">profile picture</string>
 
     <string name="file">populateDB.</string>
 
     <string name="stats">Statistika</string>
-    <string name="exit_admin_mode">Izadji iz administratorskog rezima rada</string>
+    <string name="exit_admin_mode">Izadji iz Metakomunikatora</string>
     <string name="save">Zapamti</string>
     <string name="change_pass">Promeni lozinku</string>
-    <string name="record_audio_title">Snimanje zvuka - Komunikator</string>
+    <string name="record_audio_title">Snimanje zvuka - Metaomunikator</string>
     <string name="title_activity_statistics">Statistika - Komunikator</string>
     <string name="old_pass">trenutna lozinka</string>
     <string name="new_pass">nova lozinka</string>
@@ -23,14 +23,14 @@
 
     <string name="doesnt_match_conf_new">Nova lozinka se ne poklapa sa ponovljenim unosom!</string>
     <string name="wrong_pass">Pogresna lozinka!</string>
-    <string name="login_admin">Administratorski rezim rada</string>
+    <string name="login_admin">Metakomunikator</string>
     <string name="password_admin_login">lozinka</string>
     <string name="ok">OK</string>
-    <string name="welcome_to_admin">Dobrodosli u administratorski rezim rada</string>
+    <string name="welcome_to_admin">Dobrodosli u Metakomunikator</string>
     <string name="wrong_pass_admin">Pogresna lozinka!</string>
     <string name="pass_saved">Lozinka kreirana!</string>
     <string name="add_new_option">Dodaj novu opciju</string>
-    <string name="new_option_name">Naziv nove opcije</string>
+    <string name="new_option_name">naziv nove opcije</string>
     <string name="option_name">ime opcije</string>
     <string name="save_changes">Zapamti izmene</string>
     <string name="final_option">krajnja opcija</string>
@@ -44,24 +44,25 @@
     <string name="stop_recording">Zaustavi snimanje</string>
     <string name="record">Snimaj</string>
     <string name="play_sound">Reprodukuj zvuk</string>
-    <string name="set_image">postavi sliku</string>
-    <string name="set_text">postavi tekst</string>
-    <string name="set_sound">postavi zvuk</string>
+    <string name="set_image">Postavi sliku</string>
+    <string name="set_text">Postavi tekst</string>
+    <string name="set_sound">Postavi zvuk</string>
     <string name="take_photo">Fotografisi</string>
-    <string name="add_photo">Dodaj fotografiju</string>
+    <string name="add_photo">Postavi fotografiju</string>
     <string name="choose_from_gallery">Izaberi iz galerije</string>
     <string name="record_audio">Snimi zvuk</string>
     <string name="choose_existing">Izaberi postojeci</string>
-    <string name="add_sound">Dodaj zvuk</string>
-    <string name="title_activity_new_option">NewOption</string>
+    <string name="add_sound">Postavi zvuk</string>
+    <string name="title_activity_new_option">Nova opcija - Metakomunikator</string>
     <string name="new_option_final_text">krajnji tekst</string>
     <string name="stop_music">Zaustavi zvuk</string>
-    <string name="delete_option">izbrisi opciju</string>
+    <string name="delete_option">Obrisi opciju</string>
     <string name="option_delete">Brisanje opcije</string>
-    <string name="are_you_sure_to_del_opt">Da li ste sigurni da zelite da izbrisete ovu opciju?</string>
+    <string name="are_you_sure_to_del_opt">Da li ste sigurni da zelite da obrisete ovu opciju?</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="create">Kreiraj</string>
+    <string name="set_profile_photo">Postavi profilnu fotografiju</string>
 
 
 </resources>

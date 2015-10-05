@@ -14,11 +14,11 @@ package rs.etf.mv110185.komunikator_dipl.admin;
  *
  */
 
-import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +31,7 @@ import rs.etf.mv110185.komunikator_dipl.R;
 import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 
 
-public class AudioRecorder extends Activity {
+public class AudioRecorder extends AppCompatActivity {
     private static final String LOG_TAG = "AudioRecorder";
     private String mFileName = null;
     private int id;

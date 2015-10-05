@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+    android:layout_width="250dp"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
@@ -16,7 +16,8 @@
         android:layout_height="50dp"
         android:background="#FFFFBB33"
         android:gravity="center"
-        android:text="@string/new_option_name"
+        android:singleLine="false"
+        android:text="Postavljanje naziva opcije"
         android:textAllCaps="true"
         android:textColor="#ff783a15"
         android:textSize="15dp"
@@ -26,6 +27,7 @@
         android:id="@+id/is_final_option"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:checked="false"
         android:hint="@string/final_text_will_show"
         android:text="@string/final_option" />
@@ -35,8 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="16dp"
         android:hint="@string/final_text"
         android:inputType="text"
@@ -46,8 +48,8 @@
         android:id="@+id/option_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="16dp"
         android:hint="@string/option_name"

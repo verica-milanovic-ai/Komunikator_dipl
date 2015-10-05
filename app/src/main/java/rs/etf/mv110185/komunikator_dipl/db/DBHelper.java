@@ -43,14 +43,14 @@ public class DBHelper extends SQLiteOpenHelper {
                     DBContract.CommunicatorOption.COLUMN_NAME_PARENT + INT_TYPE + " DEFAULT 0 REFERENCES option(" +
                     DBContract.CommunicatorOption.COLUMN_NAME_PARENT + ") ON DELETE SET DEFAULT )";
     private static final String SQL_CREATE_FLAGS =
-            "CREATE TABLE " + DBContract.CommunicatorFlags.TABLE_NAME + " (" +
-                    DBContract.CommunicatorFlags._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    DBContract.CommunicatorFlags.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
-                    DBContract.CommunicatorFlags.COLUMN_NAME_VALUE + TEXT_TYPE + " )";
+            "CREATE TABLE " + DBContract.CommunicatorFlag.TABLE_NAME + " (" +
+                    DBContract.CommunicatorFlag._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DBContract.CommunicatorFlag.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
+                    DBContract.CommunicatorFlag.COLUMN_NAME_VALUE + TEXT_TYPE + " )";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + DBContract.CommunicatorOption.TABLE_NAME;
     private static final String SQL_DELETE_FLAGS =
-            "DROP TABLE IF EXISTS " + DBContract.CommunicatorFlags.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + DBContract.CommunicatorFlag.TABLE_NAME;
     public static boolean populated = false;
     private Context context;
 
@@ -113,11 +113,11 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         // 2. set values
-        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_NAME, flag.getName());
-        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_VALUE, flag.getValue());
+        values.put(DBContract.CommunicatorFlag.COLUMN_NAME_NAME, flag.getName());
+        values.put(DBContract.CommunicatorFlag.COLUMN_NAME_VALUE, flag.getValue());
 
         // 3. insert
-        db.insert(DBContract.CommunicatorFlags.TABLE_NAME, // table
+        db.insert(DBContract.CommunicatorFlag.TABLE_NAME, // table
                 null, //nullColumnHack
                 values); // key/value -> keys = column names/ values = column values
 
@@ -132,9 +132,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // 2. build query
         Cursor cursor =
-                db.query(DBContract.CommunicatorFlags.TABLE_NAME, // a. table
-                        DBContract.CommunicatorFlags.COLUMNS, // b. column names
-                        " " + DBContract.CommunicatorFlags._ID + " = ?", // c. selections
+                db.query(DBContract.CommunicatorFlag.TABLE_NAME, // a. table
+                        DBContract.CommunicatorFlag.COLUMNS, // b. column names
+                        " " + DBContract.CommunicatorFlag._ID + " = ?", // c. selections
                         new String[]{String.valueOf(id)}, // d. selections args
                         null, // e. group by
                         null, // f. having
@@ -161,8 +161,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // 2. build query
         Cursor cursor =
-                db.query(DBContract.CommunicatorFlags.TABLE_NAME, // a. table
-                        DBContract.CommunicatorFlags.COLUMNS, // b. column names
+                db.query(DBContract.CommunicatorFlag.TABLE_NAME, // a. table
+                        DBContract.CommunicatorFlag.COLUMNS, // b. column names
                         " name = ?", // c. selections
                         new String[]{String.valueOf(name)}, // d. selections args
                         null, // e. group by
@@ -192,13 +192,13 @@ public class DBHelper extends SQLiteOpenHelper {
         // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
 
-        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_NAME, flag.getName());
-        values.put(DBContract.CommunicatorFlags.COLUMN_NAME_VALUE, flag.getValue());
+        values.put(DBContract.CommunicatorFlag.COLUMN_NAME_NAME, flag.getName());
+        values.put(DBContract.CommunicatorFlag.COLUMN_NAME_VALUE, flag.getValue());
 
         // 3. updating row
-        int i = db.update(DBContract.CommunicatorFlags.TABLE_NAME, //table
+        int i = db.update(DBContract.CommunicatorFlag.TABLE_NAME, //table
                 values, // column/value
-                DBContract.CommunicatorFlags.COLUMN_NAME_NAME + " LIKE ?", // selections
+                DBContract.CommunicatorFlag.COLUMN_NAME_NAME + " LIKE ?", // selections
                 new String[]{flag.getName()}); //selection args
 
         // 4. close
@@ -213,8 +213,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. delete
-        db.delete(DBContract.CommunicatorFlags.TABLE_NAME,
-                DBContract.CommunicatorFlags._ID + " = ?",
+        db.delete(DBContract.CommunicatorFlag.TABLE_NAME,
+                DBContract.CommunicatorFlag._ID + " = ?",
                 new String[]{String.valueOf(flag.getId())});
 
         // 3. close
@@ -411,7 +411,8 @@ public class DBHelper extends SQLiteOpenHelper {
         if (model != null) {
             cursor = db.query(DBContract.CommunicatorOption.TABLE_NAME, // a. table
                     DBContract.CommunicatorOption.COLUMNS, // b. column names
-                    " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + String.valueOf(model.getId()) + "'", // c. selections
+                    " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '"
+                            + String.valueOf(model.getId()) + "'", // c. selections
                     null, // d. selections args
                     null, // e. group by
                     null, // f. having
@@ -427,9 +428,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     null, // g. order by
                     null); // h. limit
         }
-
-        // 2. get reference to writable DB
-        //db.close();
+        // 2. return cursor
         return cursor;
     }
 
@@ -545,19 +544,19 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(option.getId())});
         Cursor cursor = db.query(DBContract.CommunicatorOption.TABLE_NAME, // a. table
                 DBContract.CommunicatorOption.COLUMNS, // b. column names
-                " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '" + String.valueOf(option.getId()) + "'", // c. selections
+                " " + DBContract.CommunicatorOption.COLUMN_NAME_PARENT + " = '"
+                        + String.valueOf(option.getId())
+                        + "'", // c. selections
                 null, // d. selections args
                 null, // e. group by
                 null, // f. having
                 null, // g. order by
                 null); // h. limit
 
-        // delete all children and their children, and their children... :D
+        // delete all children and their children, and their children...
         while (cursor.moveToNext()) {
             deleteOption(fillOption(cursor), db);
         }
-        // 3. close
-        // db.close();
     }
 
 

@@ -26,7 +26,7 @@ public final class DBContract {
 
     }
 
-    public static abstract class CommunicatorFlags implements BaseColumns {
+    public static abstract class CommunicatorFlag implements BaseColumns {
         public static final String TABLE_NAME = "flag";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_VALUE = "value";

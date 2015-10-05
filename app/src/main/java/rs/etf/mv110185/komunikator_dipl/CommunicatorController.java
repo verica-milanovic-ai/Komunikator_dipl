@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -20,7 +21,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -40,9 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import rs.etf.mv110185.komunikator_dipl.admin.ChangePassDialog;
 import rs.etf.mv110185.komunikator_dipl.admin.NewOption;
 import rs.etf.mv110185.komunikator_dipl.admin.OptionController;
-import rs.etf.mv110185.komunikator_dipl.admin.dialog.ChangePassDialog;
 import rs.etf.mv110185.komunikator_dipl.db.DBContract;
 import rs.etf.mv110185.komunikator_dipl.db.DBHelper;
 import rs.etf.mv110185.komunikator_dipl.db.FlagModel;
@@ -51,12 +51,11 @@ import rs.etf.mv110185.komunikator_dipl.db.OptionModel;
 /**
  * Created by Verica Milanovic on 17.09.2015..
  */
-public class CommunicatorController implements AdapterView.OnItemClickListener, View.OnClickListener, Serializable {
+public class CommunicatorController implements View.OnClickListener, Serializable {
 
     public static final int REQUEST_CAMERA = 1;
     public static final int SELECT_FILE = 2;
     public static final int SELECT_VOICE_FILE = 5;
-    public static final int SELECT_PROFILE_IMAGE = 4;
     public static final int REQUEST_AUDIO_RECORDER = 3;
     public static final int REQUEST_NEW_OPTION = 6;
     public static final int REQUEST_CAMERA_PPHOTO = 7;
@@ -69,10 +68,10 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public static String password;
     public static AlertDialog set_password_dialog;
     public static AlertDialog ask_password_dialog;
+    public static OptionModel newOption = null;
     private static List<OptionModel> user_options;
     private static List<OptionModel> userPathList;
     private static OptionModel currentOption = null;
-    private static OptionModel newOption = null;
     private static MediaPlayer mPlayer;
     private static CommunicatorController controller = null;
     private static Menu menu;
@@ -144,13 +143,14 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 mainActivityContext.getString(R.string.cancel)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivityContext);
-        builder.setTitle(mainActivityContext.getString(R.string.add_photo));
+        builder.setTitle(mainActivityContext.getString(R.string.set_profile_photo));
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals(mainActivityContext.getString(R.string.take_photo))) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    mainActivityContext.startActivityForResult(intent, CommunicatorController.REQUEST_CAMERA_PPHOTO);
+                    mainActivityContext.startActivityForResult(intent,
+                            CommunicatorController.REQUEST_CAMERA_PPHOTO);
                 } else if (items[item].equals(mainActivityContext.getString(R.string.choose_from_gallery))) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
@@ -185,7 +185,7 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(selectedImagePath, options);
-        final int REQUIRED_SIZE = 100;
+        final int REQUIRED_SIZE = 110;
         int scale = 1;
         while (options.outWidth / scale / 2 >= REQUIRED_SIZE
                 && options.outHeight / scale / 2 >= REQUIRED_SIZE)
@@ -342,12 +342,12 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                 String p = pass.getText().toString();
                 if (password == null || password.equals(p)) {
                     Toast.makeText(mainActivityContext,
-                            mainActivityContext.getString(R.string.welcome_to_admin), Toast.LENGTH_LONG).show();
+                            mainActivityContext.getString(R.string.welcome_to_admin), Toast.LENGTH_SHORT).show();
                     CommunicatorController.changeToAdminView();
                     ask_password_dialog.dismiss();
                 } else {
                     Toast.makeText(mainActivityContext,
-                            mainActivityContext.getString(R.string.wrong_pass_admin), Toast.LENGTH_LONG).show();
+                            mainActivityContext.getString(R.string.wrong_pass_admin), Toast.LENGTH_SHORT).show();
                     pass.requestFocus();
                     pass.selectAll();
                 }
@@ -401,6 +401,11 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
             }
         });
         try {
+           /* if(mPlayer.isPlaying()){
+                mPlayer.stop();
+                mPlayer.release();
+            }
+            */
             mPlayer.setDataSource(mFileName);
             mPlayer.prepare();
             mPlayer.start();
@@ -421,6 +426,10 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
             }
         });
         try {
+            /*if(mPlayer.isPlaying()){
+                mPlayer.stop();
+                mPlayer.release();
+            }*/
             mPlayer.setDataSource(mFileName);
             mPlayer.prepare();
             mPlayer.start();
@@ -430,11 +439,14 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     }
 
     private static void stopPlaying() {
-        mPlayer.release();
+        if (mPlayer != null && !mPlayer.isPlaying())
+            mPlayer.release();
         mPlayer = null;
     }
 
     public static void changeOptions() {
+        if (userPathList == null)
+            userPathList = new ArrayList<>();
         if (!userPathList.contains(currentOption))
             userPathList.add(currentOption);
 
@@ -451,13 +463,11 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
                             for (OptionModel opt : userPathList) {
                                 if (opt != null) {
                                     File image = new File(opt.getImage_src());
-                                    // BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                                    // Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-                                    // bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, true);
                                     ImageView iv = new ImageView(mainActivityContext);
-                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(80, 80);
-                                    params.setMargins(0, 5, 5, 5);
+                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(90, 90);
+                                    params.setMargins(0, 25, 15, 25);
                                     iv.setLayoutParams(params);
+                                    iv.setBackgroundColor(Color.WHITE);
                                     iv.setImageDrawable(Drawable.createFromPath(image.getAbsolutePath()));
                                     iv.setOnClickListener(arg0[0]);
                                     //TO RECOGNIZE ImageView IN LISTENER :D
@@ -483,13 +493,16 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
                                 la.setViewBinder(new MyOptionBinder());
                                 option_gv.setAdapter(la);
-                                Button btn = (Button) mainActivityContext.findViewById(R.id.add_new_opt_btn);
+                                Button btn;
+                                btn = (Button) mainActivityContext.findViewById(R.id.add_new_opt_btn);
                                 if (IS_ADMIN == 1) {
                                     btn.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Intent newOption_intent = new Intent(mainActivityContext, NewOption.class);
-                                            mainActivityContext.startActivityForResult(newOption_intent, REQUEST_NEW_OPTION);
+                                            Intent newOption_intent = new Intent(mainActivityContext,
+                                                    NewOption.class);
+                                            mainActivityContext.startActivityForResult(newOption_intent,
+                                                    REQUEST_NEW_OPTION);
                                         }
                                     });
                                     btn.setVisibility(View.VISIBLE);
@@ -536,10 +549,11 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
 
     public static void onActivityOKResult(int requestCode, Intent data) {
         Bundle bundle;
-        OptionModel mod;
+        OptionModel mod = newOption;
         if (requestCode != SELECT_FILE_PPHOTO && requestCode != REQUEST_NEW_OPTION && requestCode != REQUEST_CAMERA_PPHOTO) {
-            bundle = data.getBundleExtra("modelBundle");
+            /*bundle = data.getBundleExtra("modelBundle");
             mod = (OptionModel) bundle.getSerializable("model");
+            */
             OptionController tmp = new OptionController(mod, mainActivityContext);
             switch (requestCode) {
                 case REQUEST_CAMERA:
@@ -641,20 +655,9 @@ public class CommunicatorController implements AdapterView.OnItemClickListener, 
     public void showStats() {
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (currentOption.getVoice_src() != null) {
-            startPlaying(currentOption.getVoice_src(), position);
-        } else {
-            changeOptions(position);
-        }
-    }
-
-    // MUST RETURN TO SELECTED LEVEL
+    // MUST RETURN TO SELECTED OPTION LEVEL
     @Override
     public void onClick(View v) {
-        //  odsecem deo liste koji je posle currOption-a
-        //  ponovo popunim gridView
         ImageView iv = (ImageView) v;
         OptionModel mod = (OptionModel) iv.getTag();
         int index = userPathList.indexOf(mod);

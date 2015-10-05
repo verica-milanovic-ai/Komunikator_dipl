@@ -1,4 +1,4 @@
-package rs.etf.mv110185.komunikator_dipl.admin.dialog;
+package rs.etf.mv110185.komunikator_dipl.admin;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
